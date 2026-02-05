@@ -12,4 +12,7 @@ router.get('/', heroesController.getHeroes);
 // GET /api/heroes/:id
 router.get('/:id', heroesController.getHeroById);
 
+// POST /api/heroes
+router.post('/', heroesController.createHero);
+
 module.exports = router;

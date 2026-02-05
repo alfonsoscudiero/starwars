@@ -1,6 +1,20 @@
 /* ***************************
  *  controllers/heroes.js
  * ************************** */
+// Import Joi to validate request body
+const Joi = require('joi');
+
+// Joi schema
+const characterSchema = Joi.object({
+  firstName: Joi.string().trim().min(2).required(),
+  lastName: Joi.string().trim().allow(null, '').required(),
+  species: Joi.string().trim().required(),
+  role: Joi.string().trim().required(),
+  homeWorld: Joi.string().trim().allow(null, 'unknown').required(),
+  weapon: Joi.string().trim().required(),
+  powerLevel: Joi.number().integer().min(0).max(100).required(),
+});
+
 // MongoDB ObjectId utility and database connection
 const { ObjectId } = require('mongodb');
 const { connectToDatabase } = require('../db/connection');
@@ -54,7 +68,56 @@ const getHeroById = async (req, res) => {
   }
 };
 
+// POST /api/heroes
+const createHero = async (req, res) => {
+  try {
+    // Validate body with Joi
+    const { value, error } = characterSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        message: 'Validation failed',
+        details: error.details.map((d) => d.message),
+      });
+    }
+
+    // Capitalize the first letter
+    const capitalize = (str) =>
+      str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : str;
+
+    // Build new character
+    const newHero = {
+      firstName: capitalize(value.firstName),
+      lastName: value.lastName ? capitalize(value.lastName) : null,
+      species: capitalize(value.species),
+      role: capitalize(value.role),
+      homeworld:
+        value.homeworld && value.homeworld !== 'unknown'
+          ? capitalize(value.homeworld)
+          : value.homeworld,
+      weapon: capitalize(value.weapon),
+      powerLevel: value.powerLevel,
+    };
+
+    // Insert into DB
+    const db = await connectToDatabase();
+    const result = await db.collection('heroes').insertOne(newHero);
+
+    // Return HTTP 201 (Created)
+    return res.status(201).json({ id: result.insertedId });
+  } catch (error) {
+    console.error('[controllers/heroes] Error creating a hero:', error);
+    return res.status(500).json({
+      message: '[controllers/heroes] Server error.',
+    });
+  }
+};
+
 module.exports = {
   getHeroes,
   getHeroById,
+  createHero,
 };

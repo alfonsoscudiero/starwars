@@ -12,6 +12,9 @@ const { connectToDatabase } = require('./db/connection');
 // App creation
 const app = express();
 
+// Middleware
+app.use(express.json());
+
 // Server Configuration
 const PORT = process.env.PORT || 3000;
 
