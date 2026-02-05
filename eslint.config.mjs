@@ -1,18 +1,18 @@
-import js from "@eslint/js";
-import globals from "globals";
-import prettier from "eslint-config-prettier";
-import prettierPlugin from "eslint-plugin-prettier";
-import { defineConfig } from "eslint/config";
+import js from '@eslint/js';
+import globals from 'globals';
+import prettier from 'eslint-config-prettier';
+import prettierPlugin from 'eslint-plugin-prettier';
+import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
   {
-    ignores: ["eslint.config.mjs", "node_modules/**"],
+    ignores: ['eslint.config.mjs', 'node_modules/**'],
   },
   {
-    files: ["**/*.{js,mjs,cjs}"],
+    files: ['**/*.{js,mjs,cjs}'],
     languageOptions: {
       globals: globals.node,
-      sourceType: "commonjs",
+      sourceType: 'commonjs',
       ecmaVersion: 2021,
     },
     plugins: {
@@ -23,7 +23,7 @@ export default defineConfig([
       prettier, //  (disables ESLint formatting rules)
     ],
     rules: {
-      "prettier/prettier": "error",
+      'prettier/prettier': 'error',
     },
   },
 ]);
