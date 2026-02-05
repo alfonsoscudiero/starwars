@@ -1,8 +1,8 @@
 /* ***************************
  *  Express Web Server
- * ************************** */// 
+ * ************************** */ //
 // Load Environment variables
-require("dotenv").config();
+require('dotenv').config();
 // Express imports
 const express = require('express');
 
