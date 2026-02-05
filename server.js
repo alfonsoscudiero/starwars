@@ -17,6 +17,7 @@ const PORT = process.env.PORT || 3000;
 
 // Route modules
 const heroesRoutes = require('./routes/heroes');
+const villainsRoutes = require('./routes/villains');
 
 // Endpoints
 app.get('/', (req, res) => {
@@ -33,6 +34,7 @@ app.get('/', (req, res) => {
   });
 });
 app.use('/api/heroes', heroesRoutes);
+app.use('/api/villains', villainsRoutes);
 
 // Connect to MongoDB and start the server
 async function startServer() {
