@@ -1,6 +1,6 @@
 /* ***************************
  *  server.js
- * ************************** */ //
+ * ************************** */
 // Load Environment variables
 require('dotenv').config();
 // Express imports
@@ -15,9 +15,24 @@ const app = express();
 // Server Configuration
 const PORT = process.env.PORT || 3000;
 
+// Route modules
+const heroesRoutes = require('./routes/heroes');
+
+// Endpoints
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.status(200).json({
+    message: 'Welcome to the Star Wars API',
+    description:
+      'This API provides access to Star Wars heroes and villains data.',
+    endpoints: {
+      heroes: '/api/heroes',
+      villains: '/api/villains',
+    },
+    docs: '/api-docs',
+    status: 'OK',
+  });
 });
+app.use('/api/heroes', heroesRoutes);
 
 // Connect to MongoDB and start the server
 async function startServer() {
