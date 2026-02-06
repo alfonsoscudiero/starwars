@@ -19,4 +19,7 @@ router.post('/', villainsController.createVillain);
 // PUT /api/villains/:id
 router.put('/:id', villainsController.updateVillainById);
 
+// DELETE /api/villains/:id
+router.delete('/:id', villainsController.deleteVillainById);
+
 module.exports = router;

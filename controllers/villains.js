@@ -185,9 +185,46 @@ const updateVillainById = async (req, res) => {
   }
 };
 
+// DELETE /api/villains/:id
+const deleteVillainById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate MongoDB ObjectId
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: '[controllers/deleteVillainById] Invalid villain id format.',
+      });
+    }
+
+    const db = await connectToDatabase();
+
+    const result = await db
+      .collection('villains')
+      .deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
+        message: '[controllers/deleteVillainById] Villain not found.',
+      });
+    }
+
+    return res.status(204).send();
+  } catch (error) {
+    console.error(
+      '[controllers/deleteVillainById] Error deleting villain:',
+      error
+    );
+    return res.status(500).json({
+      message: '[controllers/deleteVillainById] Server error.',
+    });
+  }
+};
+
 module.exports = {
   getVillains,
   getVillainById,
   createVillain,
   updateVillainById,
+  deleteVillainById,
 };

@@ -184,9 +184,43 @@ const updateHeroById = async (req, res) => {
   }
 };
 
+// DELETE /api/heroes/:id
+const deleteHeroById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate MongoDB ObjectId
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: '[controllers/deleteHeroById] Invalid hero id format.',
+      });
+    }
+
+    const db = await connectToDatabase();
+
+    const result = await db
+      .collection('heroes')
+      .deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
+        message: '[controllers/deleteHeroById] hero not found.',
+      });
+    }
+
+    return res.status(204).send();
+  } catch (error) {
+    console.error('[controllers/deleteHeroById] Error deleting hero:', error);
+    return res.status(500).json({
+      message: '[controllers/deleteHeroById] Server error.',
+    });
+  }
+};
+
 module.exports = {
   getHeroes,
   getHeroById,
   createHero,
   updateHeroById,
+  deleteHeroById,
 };

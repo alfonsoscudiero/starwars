@@ -18,4 +18,7 @@ router.post('/', heroesController.createHero);
 // PUT /api/heroes/:id
 router.put('/:id', heroesController.updateHeroById);
 
+// DELETE /api/heroes/:id
+router.delete('/:id', heroesController.deleteHeroById);
+
 module.exports = router;
