@@ -1,0 +1,95 @@
+###################################################
+# STARWARS API - Local + Render demo (Heroes)
+# Local base:  http://localhost:3000
+# Render base: https://starwars-p3bg.onrender.com
+###################################################
+
+### Root (LOCAL)
+GET http://localhost:3000/
+
+### Root (RENDER)
+GET https://starwars-p3bg.onrender.com/
+
+### Get all heroes (LOCAL)
+GET http://localhost:3000/api/heroes
+Accept: application/json
+
+### Get all heroes (RENDER)
+GET https://starwars-p3bg.onrender.com/api/heroes
+Accept: application/json
+
+### Get hero by id (LOCAL)
+GET http://localhost:3000/api/heroes/{HERO_ID}
+Accept: application/json
+
+### Get hero by id (RENDER)
+GET https://starwars-p3bg.onrender.com/api/heroes/{HERO_ID}
+Accept: application/json
+
+### Create hero - Yoda (LOCAL)
+POST http://localhost:3000/api/heroes
+Content-Type: application/json
+Accept: application/json
+
+{
+  "firstName": "Yoda",
+  "lastName": null,
+  "species": "Unknown",
+  "role": "Grand Master",
+  "homeWorld": "Unknown",
+  "weapon": "Lightsaber",
+  "powerLevel": 99
+}
+
+### Create hero - Yoda (RENDER)
+POST https://starwars-p3bg.onrender.com/api/heroes
+Content-Type: application/json
+Accept: application/json
+
+{
+  "firstName": "Yoda",
+  "lastName": null,
+  "species": "Unknown",
+  "role": "Grand Master",
+  "homeWorld": "Unknown",
+  "weapon": "Lightsaber",
+  "powerLevel": 99
+}
+
+### Update Hero (Luke) powerLevel -> 97 (LOCAL)
+PUT http://localhost:3000/api/heroes/6984e6c2fa37a37fdb4f2162
+Content-Type: application/json
+Accept: application/json
+
+{
+  "firstName": "Luke",
+  "lastName": "Skywalker",
+  "species": "Human",
+  "role": "Jedi Knight",
+  "homeWorld": "Tatooine",
+  "weapon": "Lightsaber",
+  "powerLevel": 97
+}
+
+### Update Hero (Luke) powerLevel -> 97 ((RENDER)
+PUT https://starwars-p3bg.onrender.com/api/heroes/6984e6c2fa37a37fdb4f2162
+Content-Type: application/json
+Accept: application/json
+
+{
+  "firstName": "Luke",
+  "lastName": "Skywalker",
+  "species": "Human",
+  "role": "Jedi Knight",
+  "homeWorld": "Tatooine",
+  "weapon": "Lightsaber",
+  "powerLevel": 97
+}
+
+### Delete hero by id (LOCAL)
+DELETE http://localhost:3000/api/heroes/{HERO_ID}
+Accept: application/json
+
+### Delete hero by id (RENDER)
+DELETE https://starwars-p3bg.onrender.com/api/heroes/{HERO_ID}
+Accept: application/json
