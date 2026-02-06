@@ -30,7 +30,7 @@ const getVillains = async (req, res) => {
   } catch (error) {
     console.error('[controllers/villains] Error fetching villains:', error);
     return res.status(500).json({
-      message: '[controllers/villains] Server error.',
+      message: '[controllers/getVillains] Server error.',
     });
   }
 };
@@ -43,7 +43,7 @@ const getVillainById = async (req, res) => {
     // Validate MongoDB ObjectId
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({
-        message: '[controllers/villains] Invalid id format.',
+        message: '[controllers/getVillainById] Invalid id format.',
       });
     }
 
@@ -55,18 +55,18 @@ const getVillainById = async (req, res) => {
 
     if (!villain) {
       return res.status(404).json({
-        message: '[controllers/villains] Villain not found.',
+        message: '[controllers/getVillainById] Villain not found.',
       });
     }
 
     return res.status(200).json(villain);
   } catch (error) {
     console.error(
-      '[controllers/villains] Error fetching villain by id:',
+      '[controllers/getVillainById] Error fetching villain by id:',
       error
     );
     return res.status(500).json({
-      message: '[controllers/villains] Server error.',
+      message: '[controllers/getVillainById] Server error.',
     });
   }
 };
@@ -81,7 +81,7 @@ const createVillain = async (req, res) => {
 
     if (error) {
       return res.status(400).json({
-        message: 'Validation failed.',
+        message: '[controllers/createVillain] Validation failed.',
         details: error.details.map((d) => d.message),
       });
     }
@@ -107,10 +107,81 @@ const createVillain = async (req, res) => {
 
     return res.status(201).json({ id: result.insertedId });
   } catch (error) {
-    console.error('[controllers/villains] Error creating a villain:', error);
+    console.error(
+      '[controllers/createVillain] Error creating a villain:',
+      error
+    );
     return res
       .status(500)
-      .json({ message: '[controllers/villains] Server error.' });
+      .json({ message: '[controllers/createVillain] Server error.' });
+  }
+};
+
+// PUT /api/villains/:id
+const updateVillainById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: '[controllers/updateVillainById] Invalid villain id format.',
+      });
+    }
+
+    const { value, error } = characterSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        message: '[controllers/updateVillainById] Validation failed.',
+        details: error.details.map((d) => d.message),
+      });
+    }
+
+    const capitalize = (str) =>
+      str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : str;
+
+    // Build the update payload
+    const updatedVillain = {
+      firstName: capitalize(value.firstName),
+      lastName: value.lastName ? capitalize(value.lastName) : null,
+      species: capitalize(value.species),
+      role: capitalize(value.role),
+      homeWorld:
+        value.homeWorld === null || value.homeWorld === 'unknown'
+          ? value.homeWorld
+          : capitalize(value.homeWorld),
+      weapon: capitalize(value.weapon),
+      powerLevel: value.powerLevel,
+    };
+
+    // Update in DB
+    const db = await connectToDatabase();
+    const villainId = new ObjectId(id);
+
+    const result = await db
+      .collection('villains')
+      .updateOne({ _id: villainId }, { $set: updatedVillain });
+
+    // If no document matched that _id
+    if (result.matchedCount === 0) {
+      return res.status(404).json({
+        message: '[controllers/updateVillainById] Vilain not found.',
+      });
+    }
+
+    // Success (no content)
+    return res.status(204).send();
+  } catch (error) {
+    console.error(
+      '[controllers/updateVillainById] Error updating villain:',
+      error
+    );
+    return res.status(500).json({
+      message: '[controllers/updateVillainById] Server error',
+    });
   }
 };
 
@@ -118,4 +189,5 @@ module.exports = {
   getVillains,
   getVillainById,
   createVillain,
+  updateVillainById,
 };

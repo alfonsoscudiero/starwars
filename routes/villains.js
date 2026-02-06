@@ -13,7 +13,10 @@ router.get('/', villainsController.getVillains);
 // GET /api/villains/:id
 router.get('/:id', villainsController.getVillainById);
 
-// // POST /api/villains
-router.get('/', villainsController.createVillain);
+// POST /api/villains
+router.post('/', villainsController.createVillain);
+
+// PUT /api/villains/:id
+router.put('/:id', villainsController.updateVillainById);
 
 module.exports = router;
