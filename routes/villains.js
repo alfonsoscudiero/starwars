@@ -1,6 +1,7 @@
 /* ***************************
  *  routes/villains.js
  * ************************** */
+
 const express = require('express');
 const router = express.Router();
 
@@ -11,5 +12,8 @@ router.get('/', villainsController.getVillains);
 
 // GET /api/villains/:id
 router.get('/:id', villainsController.getVillainById);
+
+// // POST /api/villains
+router.get('/', villainsController.createVillain);
 
 module.exports = router;
