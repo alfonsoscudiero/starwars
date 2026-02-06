@@ -94,10 +94,10 @@ const createVillain = async (req, res) => {
       lastName: value.lastName ? capitalize(value.lastName) : null,
       species: capitalize(value.species),
       role: capitalize(value.role),
-      homeworld:
-        value.homeworld && value.homeworld !== 'unknown'
-          ? capitalize(value.homeworld)
-          : value.homeworld,
+      homeWorld:
+        value.homeWorld === null || value.homeWorld === 'unknown'
+          ? value.homeWorld
+          : capitalize(value.homeWorld),
       weapon: capitalize(value.weapon),
       powerLevel: value.powerLevel,
     };

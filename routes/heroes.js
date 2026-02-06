@@ -15,4 +15,7 @@ router.get('/:id', heroesController.getHeroById);
 // POST /api/heroes
 router.post('/', heroesController.createHero);
 
+// PUT /api/heroes/:id
+router.put('/:id', heroesController.updateHeroById);
+
 module.exports = router;

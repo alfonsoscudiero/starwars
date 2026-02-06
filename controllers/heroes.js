@@ -30,7 +30,7 @@ const getHeroes = async (req, res) => {
   } catch (error) {
     console.error('[] Error fetching heroes:', error);
     return res.status(500).json({
-      message: '[controllers/heroes] Server error.',
+      message: '[controllers/getHeroes] Server error.',
     });
   }
 };
@@ -43,7 +43,7 @@ const getHeroById = async (req, res) => {
     // Validate ObjectId format
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({
-        message: '[controllers/heroes] Invalid id format.',
+        message: '[controllers/getHeroById] Invalid id format.',
       });
     }
 
@@ -55,7 +55,7 @@ const getHeroById = async (req, res) => {
 
     if (!hero) {
       return res.status(404).json({
-        message: '[controllers/heroes] Hero not found.',
+        message: '[controllers/getHeroById] Hero not found.',
       });
     }
 
@@ -79,7 +79,7 @@ const createHero = async (req, res) => {
 
     if (error) {
       return res.status(400).json({
-        message: 'Validation failed',
+        message: '[controllers/createHero] Validation failed',
         details: error.details.map((d) => d.message),
       });
     }
@@ -94,10 +94,10 @@ const createHero = async (req, res) => {
       lastName: value.lastName ? capitalize(value.lastName) : null,
       species: capitalize(value.species),
       role: capitalize(value.role),
-      homeworld:
-        value.homeworld && value.homeworld !== 'unknown'
-          ? capitalize(value.homeworld)
-          : value.homeworld,
+      homeWorld:
+        value.homeWorld === null || value.homeWorld === 'unknown'
+          ? value.homeWorld
+          : capitalize(value.homeWorld),
       weapon: capitalize(value.weapon),
       powerLevel: value.powerLevel,
     };
@@ -109,9 +109,77 @@ const createHero = async (req, res) => {
     // Return HTTP 201 (Created)
     return res.status(201).json({ id: result.insertedId });
   } catch (error) {
-    console.error('[controllers/heroes] Error creating a hero:', error);
+    console.error('[controllers/createHero] Error creating a hero:', error);
     return res.status(500).json({
-      message: '[controllers/heroes] Server error.',
+      message: '[controllers/createHero] Server error.',
+    });
+  }
+};
+
+// PUT /api/heroes/:id
+const updateHeroById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate MongoDB ObjectId
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: '[controllers/updateHeroById] Invalid hero id format.',
+      });
+    }
+
+    // Validate body with Joi
+    const { value, error } = characterSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        message: 'Validation failed.',
+        details: error.details.map((d) => d.message),
+      });
+    }
+
+    // Capitalization helper
+    const capitalize = (str) =>
+      str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : str;
+
+    // Build the update payload
+    const updatedHero = {
+      firstName: capitalize(value.firstName),
+      lastName: value.lastName ? capitalize(value.lastName) : null,
+      species: capitalize(value.species),
+      role: capitalize(value.role),
+      homeWorld:
+        value.homeWorld === null || value.homeWorld === 'unknown'
+          ? value.homeWorld
+          : capitalize(value.homeWorld),
+      weapon: capitalize(value.weapon),
+      powerLevel: value.powerLevel,
+    };
+
+    // Update in DB
+    const db = await connectToDatabase();
+    const heroId = new ObjectId(id);
+
+    const result = await db
+      .collection('heroes')
+      .updateOne({ _id: heroId }, { $set: updatedHero });
+
+    // If no document matched that _id
+    if (result.matchedCount === 0) {
+      return res.status(404).json({
+        message: '[controllers/updateHeroById] Hero not found.',
+      });
+    }
+
+    // Success (no content)
+    return res.status(204).send();
+  } catch (error) {
+    console.error('[controllers/updateHeroById] Error updating hero:', error);
+    return res.status(500).json({
+      message: '[controllers/updateHeroById] Server error.',
     });
   }
 };
@@ -120,4 +188,5 @@ module.exports = {
   getHeroes,
   getHeroById,
   createHero,
+  updateHeroById,
 };
