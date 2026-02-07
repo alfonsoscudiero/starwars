@@ -23,64 +23,93 @@
   "paths": {
     "/": {
       "get": {
-        "description": "",
+        "summary": "API welcome and available endpoints",
+        "description": "Returns a welcome message and a list of available Star Wars API endpoints.",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "API is running and available endpoints are listed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Welcome to the Star Wars API",
+                  "description": "This API provides access to Star Wars heroes and villains data.",
+                  "endpoints": {
+                    "heroes": "/api/heroes",
+                    "villains": "/api/villains"
+                  },
+                  "docs": "/api-docs",
+                  "status": "OK"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/heroes/": {
       "get": {
-        "description": "",
+        "summary": "Get all Star Wars heroes",
+        "description": "Returns an array of all heroes stored in the database.",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "List of heroes"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error"
           }
         }
       },
       "post": {
-        "description": "",
+        "summary": "Create a new hero",
+        "description": "Creates a new hero and returns the generated ID.",
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Hero created successfully"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Validation failed"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/CharacterInput"
+              }
+            }
           }
         }
       }
     },
     "/api/heroes/{id}": {
       "get": {
-        "description": "",
+        "summary": "Get Star Wars hero by ID",
+        "description": "Returns a single hero by MongoDB ObjectId.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "Hero ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Hero found"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid ID format"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Hero not found"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error"
           }
         }
       },
@@ -137,54 +166,68 @@
     },
     "/api/villains/": {
       "get": {
-        "description": "",
+        "summary": "Get all Star Wars villains",
+        "description": "Returns an array of all villains stored in the database.",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "List of villains"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error"
           }
         }
       },
       "post": {
-        "description": "",
+        "summary": "Create a new villain",
+        "description": "Creates a new villain and returns the generated ID.",
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Villain created successfully"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Validation failed"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/CharacterInput"
+              }
+            }
           }
         }
       }
     },
     "/api/villains/{id}": {
       "get": {
-        "description": "",
+        "summary": "Get Star Wars villain by ID",
+        "description": "Returns a single villain by MongoDB ObjectId.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "Villain ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Villain found"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid ID format"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Villain not found"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error"
           }
         }
       },
@@ -235,6 +278,171 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "CharacterInput": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "required": {
+          "type": "array",
+          "example": [
+            "firstName",
+            "lastName",
+            "species",
+            "role",
+            "homeWorld",
+            "weapon",
+            "powerLevel"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Luke"
+                }
+              }
+            },
+            "lastName": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Skywalker"
+                },
+                "nullable": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            },
+            "species": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Human"
+                }
+              }
+            },
+            "role": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Jedi Knight"
+                }
+              }
+            },
+            "homeWorld": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Tatooine"
+                },
+                "nullable": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            },
+            "weapon": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Lightsaber"
+                }
+              }
+            },
+            "powerLevel": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 95
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Character": {
+      "type": "object",
+      "properties": {
+        "allOf": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "example": "object"
+              },
+              "properties": {
+                "type": "object",
+                "properties": {
+                  "_id": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "example": "string"
+                      },
+                      "example": {
+                        "type": "string",
+                        "example": "69854e24a25464dcb361b656"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

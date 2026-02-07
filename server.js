@@ -27,19 +27,42 @@ const heroesRoutes = require('./routes/heroes');
 const villainsRoutes = require('./routes/villains');
 
 // Endpoints
-app.get('/', (req, res) => {
-  res.status(200).json({
-    message: 'Welcome to the Star Wars API',
-    description:
-      'This API provides access to Star Wars heroes and villains data.',
-    endpoints: {
-      heroes: '/api/heroes',
-      villains: '/api/villains',
-    },
-    docs: '/api-docs',
-    status: 'OK',
-  });
-});
+app.get(
+  '/',
+  /* #swagger.summary = 'API welcome and available endpoints' */
+  /* #swagger.description = 'Returns a welcome message and a list of available Star Wars API endpoints.' */
+
+  /* #swagger.responses[200] = {
+      description: 'API is running and available endpoints are listed',
+      content: {
+        'application/json': {
+          example: {
+            message: 'Welcome to the Star Wars API',
+            description: 'This API provides access to Star Wars heroes and villains data.',
+            endpoints: {
+              heroes: '/api/heroes',
+              villains: '/api/villains'
+            },
+            docs: '/api-docs',
+            status: 'OK'
+          }
+        }
+      }
+  } */
+  (req, res) => {
+    res.status(200).json({
+      message: 'Welcome to the Star Wars API',
+      description:
+        'This API provides access to Star Wars heroes and villains data.',
+      endpoints: {
+        heroes: '/api/heroes',
+        villains: '/api/villains',
+      },
+      docs: '/api-docs',
+      status: 'OK',
+    });
+  }
+);
 app.use('/api/heroes', heroesRoutes);
 app.use('/api/villains', villainsRoutes);
 
