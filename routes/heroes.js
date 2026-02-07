@@ -59,13 +59,11 @@ router.post(
   /* #swagger.summary = 'Create a new hero' */
   /* #swagger.description = 'Creates a new hero and returns the generated ID.' */
 
-  /* #swagger.requestBody = {
-    required: true,
-    content: {
-    "application/json": {
-        schema: { $ref: "#/definitions/CharacterInput" }
-    }
-    }
+  /* #swagger.parameters['body'] = {
+        in: 'body',
+        description: 'Contact data to create',
+        required: true,
+        schema: { $ref: '#/definitions/CharacterInput' }
   } */
 
   /* #swagger.responses[201] = {
