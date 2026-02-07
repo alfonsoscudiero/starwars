@@ -5,6 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
+    "dev": "npm run swagger && nodemon server.js",
+    "swagger": "node ./swagger.js",
     "format": "prettier . --write",
     "lint": "eslint ."
   },
@@ -16,7 +18,9 @@
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "joi": "^18.0.2",
-    "mongodb": "^7.1.0"
+    "mongodb": "^7.1.0",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "eslint": "^9.39.2",

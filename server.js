@@ -5,6 +5,9 @@
 require('dotenv').config();
 // Express imports
 const express = require('express');
+// Swagger imports
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
 
 // Database Connection
 const { connectToDatabase } = require('./db/connection');
@@ -14,6 +17,7 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Server Configuration
 const PORT = process.env.PORT || 3000;
