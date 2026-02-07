@@ -13,11 +13,11 @@
   "paths": {
     "/": {
       "get": {
-        "summary": "Get all Star Wars villains",
-        "description": "Returns an array of all villains stored in the database.",
+        "summary": "API welcome and available endpoints",
+        "description": "Returns a welcome message and a list of available Star Wars API endpoints.",
         "responses": {
           "200": {
-            "description": "List of villains",
+            "description": "API is running and available endpoints are listed",
             "content": {
               "application/json": {
                 "example": {
@@ -32,35 +32,6 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      },
-      "post": {
-        "summary": "Create a new villain",
-        "description": "Creates a new villain and returns the generated ID.",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "description": "Contact data to create",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/CharacterInput"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Villain created successfully"
-          },
-          "400": {
-            "description": "Validation failed"
-          },
-          "500": {
-            "description": "Internal server error"
           }
         }
       }
@@ -225,85 +196,6 @@
       }
     },
     "/api/villains/{id}": {
-      "get": {
-        "summary": "Get Star Wars villain by ID",
-        "description": "Returns a single villain by MongoDB ObjectId.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "Villain ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Villain found"
-          },
-          "400": {
-            "description": "Invalid ID format"
-          },
-          "404": {
-            "description": "Villain not found"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      },
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/{id}": {
       "get": {
         "summary": "Get Star Wars villain by ID",
         "description": "Returns a single villain by MongoDB ObjectId.",
