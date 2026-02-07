@@ -1,16 +1,24 @@
 // swagger.js
 const swaggerAutogen = require('swagger-autogen')();
 
+const isProd = process.env.NODE_ENV === 'production';
+// LOCAL http://localhost:3000
+// RENDER https://starwars-p3bg.onrender.com
+
+const PUBLIC_HOST =
+  process.env.PUBLIC_HOST ||
+  (isProd ? 'starwars-p3bg.onrender.com' : 'localhost:3000');
+
+const PUBLIC_SCHEME = process.env.PUBLIC_SCHEME || (isProd ? 'https' : 'http');
+
 const doc = {
   info: {
     title: 'Star Wars API',
     description: 'Heroes and Villains REST API',
   },
-  servers: [
-    { url: 'http://localhost:3000', description: 'Local' },
-    { url: 'https://starwars-p3bg.onrender.com', description: 'Render' },
-  ],
-
+  host: PUBLIC_HOST,
+  schemes: [PUBLIC_SCHEME],
+  // Reusable data model
   definitions: {
     // Request Body Schema (POST/PUT)
     CharacterInput: {

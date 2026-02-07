@@ -6,16 +6,6 @@
     "version": "1.0.0"
   },
   "host": "localhost:3000",
-  "servers": [
-    {
-      "url": "http://localhost:3000",
-      "description": "Local"
-    },
-    {
-      "url": "https://starwars-p3bg.onrender.com",
-      "description": "Render"
-    }
-  ],
   "basePath": "/",
   "schemes": [
     "http"
