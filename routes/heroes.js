@@ -3,10 +3,8 @@
  * ************************** */
 const express = require('express');
 const router = express.Router();
-const {
-  characterSchema,
-  idParamSchema,
-} = require('../validators/validator-schema');
+
+const { characterSchema, idParamSchema } = require('../validators/validator-schema');
 const { validateBody, validateParams } = require('../middlewares/validator');
 
 const heroesController = require('../controllers/heroes');
@@ -35,7 +33,7 @@ router.get(
 
   /* #swagger.parameters['id'] = {
       in: 'path',
-      description: 'Hero ID',
+      description: 'Hero ID (MongoDB ObjectId)',
       required: true,
       type: 'string'
   } */
@@ -48,8 +46,8 @@ router.get(
       description: 'Hero not found'
   } */
 
-  /* #swagger.responses[400] = {
-      description: 'Invalid ID format'
+  /* #swagger.responses[422] = {
+      description: 'Invalid ID format (must be a 24-character hex string)'
   } */
 
   /* #swagger.responses[500] = {
@@ -67,7 +65,7 @@ router.post(
 
   /* #swagger.parameters['body'] = {
         in: 'body',
-        description: 'Contact data to create',
+        description: 'Hero data to create',
         required: true,
         schema: { $ref: '#/definitions/CharacterInput' }
   } */
@@ -76,8 +74,8 @@ router.post(
       description: 'Hero created successfully'
   } */
 
-  /* #swagger.responses[400] = {
-      description: 'Validation failed'
+  /* #swagger.responses[422] = {
+      description: 'Validation failed (request body did not match required schema)'
   } */
 
   /* #swagger.responses[500] = {
@@ -90,6 +88,38 @@ router.post(
 // PUT /api/heroes/:id
 router.put(
   '/:id',
+  /* #swagger.summary = 'Update a hero by ID' */
+  /* #swagger.description = 'Updates an existing hero by MongoDB ObjectId. Returns 204 No Content on success.' */
+
+  /* #swagger.parameters['id'] = {
+      in: 'path',
+      description: 'Hero ID (MongoDB ObjectId)',
+      required: true,
+      type: 'string'
+  } */
+
+  /* #swagger.parameters['body'] = {
+        in: 'body',
+        description: 'Updated hero data (must match CharacterInput schema)',
+        required: true,
+        schema: { $ref: '#/definitions/CharacterInput' }
+  } */
+
+  /* #swagger.responses[204] = {
+      description: 'Hero updated successfully (No Content)'
+  } */
+
+  /* #swagger.responses[404] = {
+      description: 'Hero not found'
+  } */
+
+  /* #swagger.responses[422] = {
+      description: 'Invalid ID format or body validation failed'
+  } */
+
+  /* #swagger.responses[500] = {
+      description: 'Internal server error'
+  } */
   validateParams(idParamSchema),
   validateBody(characterSchema),
   heroesController.updateHeroById
@@ -98,6 +128,31 @@ router.put(
 // DELETE /api/heroes/:id
 router.delete(
   '/:id',
+  /* #swagger.summary = 'Delete a hero by ID' */
+  /* #swagger.description = 'Deletes an existing hero by MongoDB ObjectId. Returns 204 No Content on success.' */
+
+  /* #swagger.parameters['id'] = {
+      in: 'path',
+      description: 'Hero ID (MongoDB ObjectId)',
+      required: true,
+      type: 'string'
+  } */
+
+  /* #swagger.responses[204] = {
+      description: 'Hero deleted successfully (No Content)'
+  } */
+
+  /* #swagger.responses[404] = {
+      description: 'Hero not found'
+  } */
+
+  /* #swagger.responses[422] = {
+      description: 'Invalid ID format (must be a 24-character hex string)'
+  } */
+
+  /* #swagger.responses[500] = {
+      description: 'Internal server error'
+  } */
   validateParams(idParamSchema),
   heroesController.deleteHeroById
 );
