@@ -1,6 +1,8 @@
 /* ***************************
  *  middlewares/validator.js
  * ************************** */
+const createError = require('http-errors');
+
 // Middleware factory for validating request bodies using Joi
 const validateBody =
   (schema, options = { abortEarly: false, stripUnknown: true }) =>
@@ -8,10 +10,14 @@ const validateBody =
     const { value, error } = schema.validate(req.body, options);
 
     if (error) {
-      return res.status(422).json({
-        message: 'Validation failed.',
-        details: error.details.map((d) => d.message),
-      });
+      // Error with http-errors
+      const err = createError(422, 'Validation failed');
+
+      err.details = error.details.map((d) => d.message);
+      err.publicMessage = 'Request body did not match required schema';
+      err.help = 'See /api-docs for request body requirements';
+
+      return next(err);
     }
 
     // Put cleaned/validated data back onto req.body
@@ -26,10 +32,14 @@ const validateParams =
     const { value, error } = schema.validate(req.params, options);
 
     if (error) {
-      return res.status(422).json({
-        message: 'Invalid route parameter.',
-        details: error.details.map((d) => d.message),
-      });
+      // Error with http-errors
+      const err = createError(422, 'Validation failed');
+
+      err.details = error.details.map((d) => d.message);
+      err.publicMessage = 'Invalid route parameter';
+      err.help = 'See /api-docs for route parameter requirements';
+
+      return next(err);
     }
 
     // Assign cleaned params back
