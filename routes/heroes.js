@@ -3,6 +3,8 @@
  * ************************** */
 const express = require('express');
 const router = express.Router();
+const { characterSchema, idParamSchema } = require('../validators/validator-schema');
+const { validateBody, validateParams } = require('../middlewares/validator');
 
 const heroesController = require('../controllers/heroes');
 
@@ -50,6 +52,7 @@ router.get(
   /* #swagger.responses[500] = {
       description: 'Internal server error'
   } */
+  validateParams(idParamSchema),
   heroesController.getHeroById
 );
 
@@ -77,13 +80,23 @@ router.post(
   /* #swagger.responses[500] = {
       description: 'Internal server error'
   } */
+  validateBody(characterSchema),
   heroesController.createHero
 );
 
 // PUT /api/heroes/:id
-router.put('/:id', heroesController.updateHeroById);
+router.put(
+  '/:id',
+  validateParams(idParamSchema),
+  validateBody(characterSchema),
+  heroesController.updateHeroById
+);
 
 // DELETE /api/heroes/:id
-router.delete('/:id', heroesController.deleteHeroById);
+router.delete(
+  '/:id',
+  validateParams(idParamSchema),
+  heroesController.deleteHeroById
+);
 
 module.exports = router;
