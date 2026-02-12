@@ -14,4 +14,11 @@ const characterSchema = Joi.object({
   powerLevel: Joi.number().integer().min(0).max(100).required(),
 });
 
-module.exports = { characterSchema };
+const idParamSchema = Joi.object({
+  id: Joi.string().length(24).hex().required(),
+});
+
+module.exports = {
+  characterSchema,
+  idParamSchema,
+};
