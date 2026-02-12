@@ -1,52 +1,50 @@
 /* ***************************
  *  controllers/heroes.js
  * ************************** */
-// Import Joi to validate request body
-const Joi = require('joi');
-
-// Joi schema
-const characterSchema = Joi.object({
-  firstName: Joi.string().trim().min(2).required(),
-  lastName: Joi.string().trim().allow(null, '').required(),
-  species: Joi.string().trim().required(),
-  role: Joi.string().trim().required(),
-  homeWorld: Joi.string().trim().allow(null, 'unknown').required(),
-  weapon: Joi.string().trim().required(),
-  powerLevel: Joi.number().integer().min(0).max(100).required(),
-});
+const createError = require('http-errors');
 
 // MongoDB ObjectId utility and database connection
 const { ObjectId } = require('mongodb');
 const { connectToDatabase } = require('../db/connection');
 
+// Capitalization
+const capitalize = (str) =>
+  str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : str;
+
+// Normalize payload into DB shape
+const toHeroDoc = (value) => ({
+  firstName: capitalize(value.firstName),
+  lastName: value.lastName ? capitalize(value.lastName) : null,
+  species: capitalize(value.species),
+  role: capitalize(value.role),
+  homeWorld:
+    value.homeWorld === null || value.homeWorld === 'unknown'
+      ? value.homeWorld
+      : capitalize(value.homeWorld),
+  weapon: capitalize(value.weapon),
+  powerLevel: value.powerLevel,
+});
+
 // GET /api/heroes
-const getHeroes = async (req, res) => {
+const getHeroes = async (req, res, next) => {
   try {
     const db = await connectToDatabase();
-
     const heroes = await db.collection('heroes').find({}).toArray();
 
     return res.status(200).json(heroes);
   } catch (error) {
-    console.error('[] Error fetching heroes:', error);
-    return res.status(500).json({
-      message: '[controllers/getHeroes] Server error.',
-    });
+    const err = createError(500, 'Server error');
+
+    err.publicMessage = 'Something went wrong while fetching heroes';
+    err.help = 'Try again later. See /api-docs';
+    return next(err);
   }
 };
 
 // GET /api/heroes/:id
-const getHeroById = async (req, res) => {
+const getHeroById = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    // Validate ObjectId format
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({
-        message: '[controllers/getHeroById] Invalid id format.',
-      });
-    }
-
     const db = await connectToDatabase();
 
     const hero = await db
@@ -54,53 +52,28 @@ const getHeroById = async (req, res) => {
       .findOne({ _id: new ObjectId(id) });
 
     if (!hero) {
-      return res.status(404).json({
-        message: '[controllers/getHeroById] Hero not found.',
-      });
+      const err = createError(404, 'Hero not found');
+
+      err.publicMessage = 'No hero exists with the provided id';
+      err.help = 'Use GET /api/heroes to list valid ids.';
+      return next(err);
     }
 
     return res.status(200).json(hero);
   } catch (error) {
-    console.error('[controllers/heroes] Error fetching hero by id:', error);
-    return res.status(500).json({
-      message: '[controllers/heroes] Server error.',
-    });
+    const err = createError(500, 'Server error');
+
+    err.publicMessage = 'Something went wrong while fetching the hero';
+    err.help = 'Try again later. See /api-docs';
+    return next(err);
   }
 };
 
 // POST /api/heroes
-const createHero = async (req, res) => {
+const createHero = async (req, res, next) => {
   try {
-    // Validate body with Joi
-    const { value, error } = characterSchema.validate(req.body, {
-      abortEarly: false,
-      stripUnknown: true,
-    });
-
-    if (error) {
-      return res.status(400).json({
-        message: '[controllers/createHero] Validation failed',
-        details: error.details.map((d) => d.message),
-      });
-    }
-
-    // Capitalize the first letter
-    const capitalize = (str) =>
-      str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : str;
-
-    // Build new character
-    const newHero = {
-      firstName: capitalize(value.firstName),
-      lastName: value.lastName ? capitalize(value.lastName) : null,
-      species: capitalize(value.species),
-      role: capitalize(value.role),
-      homeWorld:
-        value.homeWorld === null || value.homeWorld === 'unknown'
-          ? value.homeWorld
-          : capitalize(value.homeWorld),
-      weapon: capitalize(value.weapon),
-      powerLevel: value.powerLevel,
-    };
+    // req.body already validated
+    const newHero = toHeroDoc(req.body);
 
     // Insert into DB
     const db = await connectToDatabase();
@@ -109,57 +82,20 @@ const createHero = async (req, res) => {
     // Return HTTP 201 (Created)
     return res.status(201).json({ id: result.insertedId });
   } catch (error) {
-    console.error('[controllers/createHero] Error creating a hero:', error);
-    return res.status(500).json({
-      message: '[controllers/createHero] Server error.',
-    });
+    const err = createError(500, 'Server error');
+
+    err.publicMessage = 'Something went wrong while creating the hero';
+    err.help = 'Try again later. See /api-docs';
+    return next(err);
   }
 };
 
 // PUT /api/heroes/:id
-const updateHeroById = async (req, res) => {
+const updateHeroById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const updatedHero = toHeroDoc(req.body);
 
-    // Validate MongoDB ObjectId
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({
-        message: '[controllers/updateHeroById] Invalid hero id format.',
-      });
-    }
-
-    // Validate body with Joi
-    const { value, error } = characterSchema.validate(req.body, {
-      abortEarly: false,
-      stripUnknown: true,
-    });
-
-    if (error) {
-      return res.status(400).json({
-        message: 'Validation failed.',
-        details: error.details.map((d) => d.message),
-      });
-    }
-
-    // Capitalization helper
-    const capitalize = (str) =>
-      str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : str;
-
-    // Build the update payload
-    const updatedHero = {
-      firstName: capitalize(value.firstName),
-      lastName: value.lastName ? capitalize(value.lastName) : null,
-      species: capitalize(value.species),
-      role: capitalize(value.role),
-      homeWorld:
-        value.homeWorld === null || value.homeWorld === 'unknown'
-          ? value.homeWorld
-          : capitalize(value.homeWorld),
-      weapon: capitalize(value.weapon),
-      powerLevel: value.powerLevel,
-    };
-
-    // Update in DB
     const db = await connectToDatabase();
     const heroId = new ObjectId(id);
 
@@ -169,33 +105,28 @@ const updateHeroById = async (req, res) => {
 
     // If no document matched that _id
     if (result.matchedCount === 0) {
-      return res.status(404).json({
-        message: '[controllers/updateHeroById] Hero not found.',
-      });
+      const err = createError(404, 'Hero not found');
+
+      err.publicMessage = 'No hero exists with the provided id';
+      err.help = 'Use GET /api/heroes to list valid ids.';
+      return next(err);
     }
 
     // Success (no content)
     return res.status(204).send();
   } catch (error) {
-    console.error('[controllers/updateHeroById] Error updating hero:', error);
-    return res.status(500).json({
-      message: '[controllers/updateHeroById] Server error.',
-    });
+    const err = createError(500, 'Server error');
+
+    err.publicMessage = 'Something went wrong while updating the hero';
+    err.help = 'Try again later. See /api-docs';
+    return next(err);
   }
 };
 
 // DELETE /api/heroes/:id
-const deleteHeroById = async (req, res) => {
+const deleteHeroById = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    // Validate MongoDB ObjectId
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({
-        message: '[controllers/deleteHeroById] Invalid hero id format.',
-      });
-    }
-
     const db = await connectToDatabase();
 
     const result = await db
@@ -203,17 +134,20 @@ const deleteHeroById = async (req, res) => {
       .deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({
-        message: '[controllers/deleteHeroById] hero not found.',
-      });
+      const err = createError(404, 'Hero not found');
+
+      err.publicMessage = 'No hero exists with the provided id';
+      err.help = 'Use GET /api/heroes to list valid ids.';
+      return next(err);
     }
 
     return res.status(204).send();
   } catch (error) {
-    console.error('[controllers/deleteHeroById] Error deleting hero:', error);
-    return res.status(500).json({
-      message: '[controllers/deleteHeroById] Server error.',
-    });
+    const err = createError(500, 'Server error');
+
+    err.publicMessage = 'Something went wrong while deleting the hero';
+    err.help = 'Try again later. See /api-docs';
+    return next(err);
   }
 };
 
