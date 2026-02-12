@@ -3,7 +3,10 @@
  * ************************** */
 const express = require('express');
 const router = express.Router();
-const { characterSchema, idParamSchema } = require('../validators/validator-schema');
+const {
+  characterSchema,
+  idParamSchema,
+} = require('../validators/validator-schema');
 const { validateBody, validateParams } = require('../middlewares/validator');
 
 const heroesController = require('../controllers/heroes');

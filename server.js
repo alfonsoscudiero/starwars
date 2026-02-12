@@ -3,29 +3,31 @@
  * ************************** */
 // Load Environment variables
 require('dotenv').config();
-// Express imports
+
 const express = require('express');
-// Swagger imports
+const cors = require('cors');
+
+// http-errors factory
+const createError = require('http-errors');
+
+// Swagger UI
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
-// CORS imports
-const cors = require('cors');
 
 // Database Connection
 const { connectToDatabase } = require('./db/connection');
 
 // App creation
 const app = express();
+// Server Configuration
+const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Global Middleware
 app.use(cors());
 app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Server Configuration
-const PORT = process.env.PORT || 3000;
-
-// Route modules
+// Routes
 const heroesRoutes = require('./routes/heroes');
 const villainsRoutes = require('./routes/villains');
 
@@ -69,7 +71,47 @@ app.get(
 app.use('/api/heroes', heroesRoutes);
 app.use('/api/villains', villainsRoutes);
 
-// Connect to MongoDB and start the server
+// 404 Not Found Handler (CATCH-ALL)
+app.use((req, res, next) => {
+  next(createError(404, 'Not found'));
+});
+
+// Centralized error-handling
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || err.status || 500;
+  const isClientError = statusCode >= 400 && statusCode < 500;
+
+  // Standardized JSON error contract
+  const responseBody = {
+    statusCode,
+    message: err.message || (isClientError ? 'Request failed' : 'Server error'),
+
+    error: isClientError
+      ? err.publicMessage || err.message || 'Request could not be processed'
+      : 'Unexpected error',
+
+    help: err.help || 'See /api-docs for usage requirements',
+
+    // Helpful debugging metadata
+    timestamp: new Date().toISOString(),
+    path: req.originalUrl,
+    method: req.method,
+  };
+
+  // Attach validation details
+  if (Array.isArray(err.details) && err.details.length > 0) {
+    responseBody.details = err.details;
+  }
+
+  // Log stack/details only for 5xx
+  if (!isClientError) {
+    console.error(err);
+  }
+
+  res.status(statusCode).json(responseBody);
+});
+
+// Start the server after DB check
 async function startServer() {
   try {
     // Verify DB connection
