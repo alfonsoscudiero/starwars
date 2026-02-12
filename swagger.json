@@ -56,7 +56,7 @@
           {
             "name": "body",
             "in": "body",
-            "description": "Contact data to create",
+            "description": "Hero data to create",
             "required": true,
             "schema": {
               "$ref": "#/definitions/CharacterInput"
@@ -67,8 +67,8 @@
           "201": {
             "description": "Hero created successfully"
           },
-          "400": {
-            "description": "Validation failed"
+          "422": {
+            "description": "Validation failed (request body did not match required schema)"
           },
           "500": {
             "description": "Internal server error"
@@ -86,18 +86,18 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "Hero ID"
+            "description": "Hero ID (MongoDB ObjectId)"
           }
         ],
         "responses": {
           "200": {
             "description": "Hero found"
           },
-          "400": {
-            "description": "Invalid ID format"
-          },
           "404": {
             "description": "Hero not found"
+          },
+          "422": {
+            "description": "Invalid ID format (must be a 24-character hex string)"
           },
           "500": {
             "description": "Internal server error"
@@ -105,52 +105,65 @@
         }
       },
       "put": {
-        "description": "",
+        "summary": "Update a hero by ID",
+        "description": "Updates an existing hero by MongoDB ObjectId. Returns 204 No Content on success.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "Hero ID (MongoDB ObjectId)"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Updated hero data (must match CharacterInput schema)",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CharacterInput"
+            }
           }
         ],
         "responses": {
           "204": {
-            "description": "No Content"
-          },
-          "400": {
-            "description": "Bad Request"
+            "description": "Hero updated successfully (No Content)"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Hero not found"
+          },
+          "422": {
+            "description": "Invalid ID format or body validation failed"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error"
           }
         }
       },
       "delete": {
-        "description": "",
+        "summary": "Delete a hero by ID",
+        "description": "Deletes an existing hero by MongoDB ObjectId. Returns 204 No Content on success.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "Hero ID (MongoDB ObjectId)"
           }
         ],
         "responses": {
           "204": {
-            "description": "No Content"
-          },
-          "400": {
-            "description": "Bad Request"
+            "description": "Hero deleted successfully (No Content)"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Hero not found"
+          },
+          "422": {
+            "description": "Invalid ID format (must be a 24-character hex string)"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error"
           }
         }
       }
