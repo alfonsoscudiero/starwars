@@ -1,52 +1,50 @@
 /* ***************************
  *  controllers/villains.js
  * ************************** */
-// // Import Joi to validate request body
-const Joi = require('joi');
-
-// // Joi schema
-const characterSchema = Joi.object({
-  firstName: Joi.string().trim().min(2).required(),
-  lastName: Joi.string().trim().allow(null, '').required(),
-  species: Joi.string().trim().required(),
-  role: Joi.string().trim().required(),
-  homeWorld: Joi.string().trim().allow(null, 'unknown').required(),
-  weapon: Joi.string().trim().required(),
-  powerLevel: Joi.number().integer().min(0).max(100).required(),
-});
+const createError = require('http-errors');
 
 // MongoDB ObjectId utility and database connection
 const { ObjectId } = require('mongodb');
 const { connectToDatabase } = require('../db/connection');
 
+// Capitalization
+const capitalize = (str) =>
+  str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : str;
+
+// Normalize payload into DB shape
+const toVillainDoc = (value) => ({
+  firstName: capitalize(value.firstName),
+  lastName: value.lastName ? capitalize(value.lastName) : null,
+  species: capitalize(value.species),
+  role: capitalize(value.role),
+  homeWorld:
+    value.homeWorld === null || value.homeWorld === 'unknown'
+      ? value.homeWorld
+      : capitalize(value.homeWorld),
+  weapon: capitalize(value.weapon),
+  powerLevel: value.powerLevel,
+});
+
 // GET /api/villains
-const getVillains = async (req, res) => {
+const getVillains = async (req, res, next) => {
   try {
     const db = await connectToDatabase();
-
     const villains = await db.collection('villains').find({}).toArray();
 
     return res.status(200).json(villains);
   } catch (error) {
-    console.error('[controllers/villains] Error fetching villains:', error);
-    return res.status(500).json({
-      message: '[controllers/getVillains] Server error.',
-    });
+    const err = createError(500, 'Server error');
+
+    err.publicMessage = 'Something went wrong while fetching villains';
+    err.help = 'Try again later. See /api-docs';
+    return next(err);
   }
 };
 
 // GET /api/villains/:id
-const getVillainById = async (req, res) => {
+const getVillainById = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    // Validate MongoDB ObjectId
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({
-        message: '[controllers/getVillainById] Invalid id format.',
-      });
-    }
-
     const db = await connectToDatabase();
 
     const villain = await db
@@ -54,110 +52,48 @@ const getVillainById = async (req, res) => {
       .findOne({ _id: new ObjectId(id) });
 
     if (!villain) {
-      return res.status(404).json({
-        message: '[controllers/getVillainById] Villain not found.',
-      });
+      const err = createError(404, 'Villain not found');
+
+      err.publicMessage = 'No villain exists with the provided id';
+      err.help = 'Use GET /api/villains to list valid ids.';
+      return next(err);
     }
 
     return res.status(200).json(villain);
   } catch (error) {
-    console.error(
-      '[controllers/getVillainById] Error fetching villain by id:',
-      error
-    );
-    return res.status(500).json({
-      message: '[controllers/getVillainById] Server error.',
-    });
+    const err = createError(500, 'Server error');
+
+    err.publicMessage = 'Something went wrong while fetching the villain';
+    err.help = 'Try again later. See /api-docs';
+    return next(err);
   }
 };
 
 // POST /api/villains
-const createVillain = async (req, res) => {
+const createVillain = async (req, res, next) => {
   try {
-    const { value, error } = characterSchema.validate(req.body, {
-      abortEarly: false,
-      stripUnknown: true,
-    });
-
-    if (error) {
-      return res.status(400).json({
-        message: '[controllers/createVillain] Validation failed.',
-        details: error.details.map((d) => d.message),
-      });
-    }
-
-    const capitalize = (str) =>
-      str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : str;
-
-    const newVillain = {
-      firstName: capitalize(value.firstName),
-      lastName: value.lastName ? capitalize(value.lastName) : null,
-      species: capitalize(value.species),
-      role: capitalize(value.role),
-      homeWorld:
-        value.homeWorld === null || value.homeWorld === 'unknown'
-          ? value.homeWorld
-          : capitalize(value.homeWorld),
-      weapon: capitalize(value.weapon),
-      powerLevel: value.powerLevel,
-    };
+    // req.body already validated
+    const newVillain = toVillainDoc(req.body);
 
     const db = await connectToDatabase();
     const result = await db.collection('villains').insertOne(newVillain);
 
     return res.status(201).json({ id: result.insertedId });
   } catch (error) {
-    console.error(
-      '[controllers/createVillain] Error creating a villain:',
-      error
-    );
-    return res
-      .status(500)
-      .json({ message: '[controllers/createVillain] Server error.' });
+    const err = createError(500, 'Server error');
+
+    err.publicMessage = 'Something went wrong while creating the villain';
+    err.help = 'Try again later. See /api-docs';
+    return next(err);
   }
 };
 
 // PUT /api/villains/:id
-const updateVillainById = async (req, res) => {
+const updateVillainById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const updatedVillain = toVillainDoc(req.body);
 
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({
-        message: '[controllers/updateVillainById] Invalid villain id format.',
-      });
-    }
-
-    const { value, error } = characterSchema.validate(req.body, {
-      abortEarly: false,
-      stripUnknown: true,
-    });
-
-    if (error) {
-      return res.status(400).json({
-        message: '[controllers/updateVillainById] Validation failed.',
-        details: error.details.map((d) => d.message),
-      });
-    }
-
-    const capitalize = (str) =>
-      str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : str;
-
-    // Build the update payload
-    const updatedVillain = {
-      firstName: capitalize(value.firstName),
-      lastName: value.lastName ? capitalize(value.lastName) : null,
-      species: capitalize(value.species),
-      role: capitalize(value.role),
-      homeWorld:
-        value.homeWorld === null || value.homeWorld === 'unknown'
-          ? value.homeWorld
-          : capitalize(value.homeWorld),
-      weapon: capitalize(value.weapon),
-      powerLevel: value.powerLevel,
-    };
-
-    // Update in DB
     const db = await connectToDatabase();
     const villainId = new ObjectId(id);
 
@@ -165,38 +101,28 @@ const updateVillainById = async (req, res) => {
       .collection('villains')
       .updateOne({ _id: villainId }, { $set: updatedVillain });
 
-    // If no document matched that _id
     if (result.matchedCount === 0) {
-      return res.status(404).json({
-        message: '[controllers/updateVillainById] Vilain not found.',
-      });
+      const err = createError(404, 'Villain not found');
+
+      err.publicMessage = 'No villain exists with the provided id';
+      err.help = 'Use GET /api/villains to list valid ids.';
+      return next(err);
     }
 
-    // Success (no content)
     return res.status(204).send();
   } catch (error) {
-    console.error(
-      '[controllers/updateVillainById] Error updating villain:',
-      error
-    );
-    return res.status(500).json({
-      message: '[controllers/updateVillainById] Server error',
-    });
+    const err = createError(500, 'Server error');
+
+    err.publicMessage = 'Something went wrong while updating the villain';
+    err.help = 'Try again later. See /api-docs';
+    return next(err);
   }
 };
 
 // DELETE /api/villains/:id
-const deleteVillainById = async (req, res) => {
+const deleteVillainById = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    // Validate MongoDB ObjectId
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({
-        message: '[controllers/deleteVillainById] Invalid villain id format.',
-      });
-    }
-
     const db = await connectToDatabase();
 
     const result = await db
@@ -204,20 +130,20 @@ const deleteVillainById = async (req, res) => {
       .deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({
-        message: '[controllers/deleteVillainById] Villain not found.',
-      });
+      const err = createError(404, 'Villain not found');
+
+      err.publicMessage = 'No villain exists with the provided id';
+      err.help = 'Use GET /api/villains to list valid ids.';
+      return next(err);
     }
 
     return res.status(204).send();
   } catch (error) {
-    console.error(
-      '[controllers/deleteVillainById] Error deleting villain:',
-      error
-    );
-    return res.status(500).json({
-      message: '[controllers/deleteVillainById] Server error.',
-    });
+    const err = createError(500, 'Server error');
+
+    err.publicMessage = 'Something went wrong while deleting the villain';
+    err.help = 'Try again later. See /api-docs';
+    return next(err);
   }
 };
 
