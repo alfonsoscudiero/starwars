@@ -5,6 +5,12 @@
 const express = require('express');
 const router = express.Router();
 
+const {
+  characterSchema,
+  idParamSchema,
+} = require('../validators/validator-schema');
+const { validateBody, validateParams } = require('../middlewares/validator');
+
 const villainsController = require('../controllers/villains');
 
 // GET /api/villains
@@ -31,7 +37,7 @@ router.get(
 
   /* #swagger.parameters['id'] = {
       in: 'path',
-      description: 'Villain ID',
+      description: 'Villain ID (MongoDB ObjectId)',
       required: true,
       type: 'string'
   } */
@@ -44,13 +50,14 @@ router.get(
       description: 'Villain not found'
   } */
 
-  /* #swagger.responses[400] = {
-      description: 'Invalid ID format'
+  /* #swagger.responses[422] = {
+      description: 'Invalid ID format (must be a 24-character hex string)'
   } */
 
   /* #swagger.responses[500] = {
-        description: 'Internal server error'
+      description: 'Internal server error'
   } */
+  validateParams(idParamSchema),
   villainsController.getVillainById
 );
 
@@ -62,7 +69,7 @@ router.post(
 
   /* #swagger.parameters['body'] = {
         in: 'body',
-        description: 'Contact data to create',
+        description: 'Villain data to create',
         required: true,
         schema: { $ref: '#/definitions/CharacterInput' }
   } */
@@ -71,20 +78,87 @@ router.post(
       description: 'Villain created successfully'
   } */
 
-  /* #swagger.responses[400] = {
-      description: 'Validation failed'
+  /* #swagger.responses[422] = {
+      description: 'Validation failed (request body did not match required schema)'
   } */
 
   /* #swagger.responses[500] = {
       description: 'Internal server error'
   } */
+  validateBody(characterSchema),
   villainsController.createVillain
 );
 
 // PUT /api/villains/:id
-router.put('/:id', villainsController.updateVillainById);
+router.put(
+  '/:id',
+  /* #swagger.summary = 'Update a villain by ID' */
+  /* #swagger.description = 'Updates an existing villain by MongoDB ObjectId. Returns 204 No Content on success.' */
+
+  /* #swagger.parameters['id'] = {
+      in: 'path',
+      description: 'Villain ID (MongoDB ObjectId)',
+      required: true,
+      type: 'string'
+  } */
+
+  /* #swagger.parameters['body'] = {
+        in: 'body',
+        description: 'Updated villain data (must match CharacterInput schema)',
+        required: true,
+        schema: { $ref: '#/definitions/CharacterInput' }
+  } */
+
+  /* #swagger.responses[204] = {
+      description: 'Villain updated successfully (No Content)'
+  } */
+
+  /* #swagger.responses[404] = {
+      description: 'Villain not found'
+  } */
+
+  /* #swagger.responses[422] = {
+      description: 'Invalid ID format or body validation failed'
+  } */
+
+  /* #swagger.responses[500] = {
+      description: 'Internal server error'
+  } */
+  validateParams(idParamSchema),
+  validateBody(characterSchema),
+  villainsController.updateVillainById
+);
 
 // DELETE /api/villains/:id
-router.delete('/:id', villainsController.deleteVillainById);
+router.delete(
+  '/:id',
+  /* #swagger.summary = 'Delete a villain by ID' */
+  /* #swagger.description = 'Deletes an existing villain by MongoDB ObjectId. Returns 204 No Content on success.' */
+
+  /* #swagger.parameters['id'] = {
+      in: 'path',
+      description: 'Villain ID (MongoDB ObjectId)',
+      required: true,
+      type: 'string'
+  } */
+
+  /* #swagger.responses[204] = {
+      description: 'Villain deleted successfully (No Content)'
+  } */
+
+  /* #swagger.responses[404] = {
+      description: 'Villain not found'
+  } */
+
+  /* #swagger.responses[422] = {
+      description: 'Invalid ID format (must be a 24-character hex string)'
+  } */
+
+  /* #swagger.responses[500] = {
+      description: 'Internal server error'
+  } */
+  validateParams(idParamSchema),
+  villainsController.deleteVillainById
+);
 
 module.exports = router;
