@@ -141,7 +141,9 @@ const deleteHeroById = async (req, res, next) => {
       return next(err);
     }
 
-    return res.status(204).send();
+    return res.status(200).json({
+      message: 'Hero deleted successfully',
+    });
   } catch (error) {
     const err = createError(500, 'Server error');
 

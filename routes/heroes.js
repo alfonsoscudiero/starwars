@@ -132,7 +132,7 @@ router.put(
 router.delete(
   '/:id',
   /* #swagger.summary = 'Delete a hero by ID' */
-  /* #swagger.description = 'Deletes an existing hero by MongoDB ObjectId. Returns 204 No Content on success.' */
+  /* #swagger.description = 'Deletes an existing hero by MongoDB ObjectId. Returns 200 on success' */
 
   /* #swagger.parameters['id'] = {
       in: 'path',
@@ -141,8 +141,8 @@ router.delete(
       type: 'string'
   } */
 
-  /* #swagger.responses[204] = {
-      description: 'Hero deleted successfully (No Content)'
+  /* #swagger.responses[200] = {
+      description: 'Hero deleted successfully'
   } */
 
   /* #swagger.responses[404] = {

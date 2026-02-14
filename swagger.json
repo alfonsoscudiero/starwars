@@ -142,7 +142,7 @@
       },
       "delete": {
         "summary": "Delete a hero by ID",
-        "description": "Deletes an existing hero by MongoDB ObjectId. Returns 204 No Content on success.",
+        "description": "Deletes an existing hero by MongoDB ObjectId. Returns 200 on success",
         "parameters": [
           {
             "name": "id",
@@ -153,8 +153,8 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "Hero deleted successfully (No Content)"
+          "200": {
+            "description": "Hero deleted successfully"
           },
           "404": {
             "description": "Hero not found"
@@ -188,7 +188,7 @@
           {
             "name": "body",
             "in": "body",
-            "description": "Contact data to create",
+            "description": "Villain data to create",
             "required": true,
             "schema": {
               "$ref": "#/definitions/CharacterInput"
@@ -199,8 +199,8 @@
           "201": {
             "description": "Villain created successfully"
           },
-          "400": {
-            "description": "Validation failed"
+          "422": {
+            "description": "Validation failed (request body did not match required schema)"
           },
           "500": {
             "description": "Internal server error"
@@ -218,18 +218,18 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "Villain ID"
+            "description": "Villain ID (MongoDB ObjectId)"
           }
         ],
         "responses": {
           "200": {
             "description": "Villain found"
           },
-          "400": {
-            "description": "Invalid ID format"
-          },
           "404": {
             "description": "Villain not found"
+          },
+          "422": {
+            "description": "Invalid ID format (must be a 24-character hex string)"
           },
           "500": {
             "description": "Internal server error"
@@ -237,52 +237,65 @@
         }
       },
       "put": {
-        "description": "",
+        "summary": "Update a villain by ID",
+        "description": "Updates an existing villain by MongoDB ObjectId. Returns 204 No Content on success.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "Villain ID (MongoDB ObjectId)"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Updated villain data (must match CharacterInput schema)",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CharacterInput"
+            }
           }
         ],
         "responses": {
           "204": {
-            "description": "No Content"
-          },
-          "400": {
-            "description": "Bad Request"
+            "description": "Villain updated successfully (No Content)"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Villain not found"
+          },
+          "422": {
+            "description": "Invalid ID format or body validation failed"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error"
           }
         }
       },
       "delete": {
-        "description": "",
+        "summary": "Delete a villain by ID",
+        "description": "Deletes an existing villain by MongoDB ObjectId. Returns 200 on success",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "Villain ID (MongoDB ObjectId)"
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "400": {
-            "description": "Bad Request"
+          "200": {
+            "description": "Villain deleted successfully"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Villain not found"
+          },
+          "422": {
+            "description": "Invalid ID format (must be a 24-character hex string)"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error"
           }
         }
       }
