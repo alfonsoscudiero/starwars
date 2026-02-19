@@ -26,10 +26,12 @@ type AsyncHandler = (
   next: NextFunction
 ) => Promise<void>;
 
+// Route params for endpoints using :id
+type IdParams = { id: string };
+
 // Capitalization
 const capitalize = (str: string): string =>
   str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-
 
 // Normalize payload into DB shape
 const toHeroDoc = (value: HeroInput) => ({
@@ -60,14 +62,19 @@ export const getHeroes: AsyncHandler = async (_req, res, next) => {
 };
 
 // GET /api/heroes/:id
-const getHeroById = async (req, res, next) => {
+export const getHeroById = async (
+  req: Request<IdParams>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const { id } = req.params;
     const db = await connectToDatabase();
+    const objectId = new ObjectId(id);
 
     const hero = await db
       .collection('heroes')
-      .findOne({ _id: new ObjectId(id) });
+      .findOne({ _id: objectId });
 
     if (!hero) {
       const err = createError(404, 'Hero not found');
