@@ -11,7 +11,7 @@ import { connectToDatabase } from '../db/connection';
 // Reusable Request Body Type
 type HeroInput = {
   firstName: string;
-  lastName?: string | null;
+  lastName: string | null;
   species: string;
   role: string;
   homeWorld: string | null;
@@ -27,20 +27,21 @@ type AsyncHandler = (
 ) => Promise<void>;
 
 // Capitalization
-const capitalize = (str: string | null | undefined): string | null =>
-  str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : null;
+const capitalize = (str: string): string =>
+  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
 
 // Normalize payload into DB shape
 const toHeroDoc = (value: HeroInput) => ({
-  firstName: capitalize(value.firstName) ?? '',
+  firstName: capitalize(value.firstName),
   lastName: value.lastName ? capitalize(value.lastName) : null,
-  species: capitalize(value.species) ?? '',
-  role: capitalize(value.role) ?? '',
+  species: capitalize(value.species),
+  role: capitalize(value.role),
   homeWorld:
     value.homeWorld === null || value.homeWorld === 'unknown'
       ? value.homeWorld
       : capitalize(value.homeWorld),
-  weapon: capitalize(value.weapon) ?? '',
+  weapon: capitalize(value.weapon),
   powerLevel: value.powerLevel,
 });
 
