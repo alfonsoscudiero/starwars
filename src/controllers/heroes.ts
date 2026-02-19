@@ -117,10 +117,17 @@ export const createHero : AsyncHandler = async (req, res, next) => {
 };
 
 // PUT /api/heroes/:id
-const updateHeroById = async (req, res, next) => {
+export const updateHeroById = async (
+  req: Request<IdParams>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const { id } = req.params;
-    const updatedHero = toHeroDoc(req.body);
+
+    // req.body already validated
+    const heroData = req.body as HeroInput;
+    const updatedHero = toHeroDoc(heroData);
 
     const db = await connectToDatabase();
     const heroId = new ObjectId(id);
@@ -139,7 +146,7 @@ const updateHeroById = async (req, res, next) => {
     }
 
     // Success (no content)
-    return res.status(204).send();
+    res.status(204).send();
   } catch (error) {
     const err = createError(500, 'Server error');
 
@@ -150,14 +157,20 @@ const updateHeroById = async (req, res, next) => {
 };
 
 // DELETE /api/heroes/:id
-const deleteHeroById = async (req, res, next) => {
+export const deleteHeroById = async (
+  req: Request<IdParams>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const { id } = req.params;
+
     const db = await connectToDatabase();
+    const heroId = new ObjectId(id);
 
     const result = await db
       .collection('heroes')
-      .deleteOne({ _id: new ObjectId(id) });
+      .deleteOne({ _id: heroId });
 
     if (result.deletedCount === 0) {
       const err = createError(404, 'Hero not found');
@@ -167,7 +180,7 @@ const deleteHeroById = async (req, res, next) => {
       return next(err);
     }
 
-    return res.status(200).json({
+    res.status(200).json({
       message: 'Hero deleted successfully',
     });
   } catch (error) {
@@ -179,10 +192,3 @@ const deleteHeroById = async (req, res, next) => {
   }
 };
 
-module.exports = {
-  getHeroes,
-  getHeroById,
-  createHero,
-  updateHeroById,
-  deleteHeroById,
-};
