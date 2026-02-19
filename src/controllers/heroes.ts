@@ -84,7 +84,7 @@ export const getHeroById = async (
       return next(err);
     }
 
-    return res.status(200).json(hero);
+    res.status(200).json(hero);
   } catch (error) {
     const err = createError(500, 'Server error');
 
@@ -95,17 +95,18 @@ export const getHeroById = async (
 };
 
 // POST /api/heroes
-const createHero = async (req, res, next) => {
+export const createHero : AsyncHandler = async (req, res, next) => {
   try {
     // req.body already validated
-    const newHero = toHeroDoc(req.body);
+    const heroData = req.body as HeroInput; // It becomes typed as HeroInput
+    const newHero = toHeroDoc(heroData);
 
     // Insert into DB
     const db = await connectToDatabase();
     const result = await db.collection('heroes').insertOne(newHero);
 
     // Return HTTP 201 (Created)
-    return res.status(201).json({ id: result.insertedId });
+    res.status(201).json({ id: result.insertedId });
   } catch (error) {
     const err = createError(500, 'Server error');
 
