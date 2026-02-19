@@ -1,5 +1,5 @@
 /* ***************************
- *  controllers/heroes.js
+ *  src/controllers/heroes.ts
  * ************************** */
 import type { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
@@ -72,9 +72,7 @@ export const getHeroById = async (
     const db = await connectToDatabase();
     const objectId = new ObjectId(id);
 
-    const hero = await db
-      .collection('heroes')
-      .findOne({ _id: objectId });
+    const hero = await db.collection('heroes').findOne({ _id: objectId });
 
     if (!hero) {
       const err = createError(404, 'Hero not found');
@@ -95,7 +93,7 @@ export const getHeroById = async (
 };
 
 // POST /api/heroes
-export const createHero : AsyncHandler = async (req, res, next) => {
+export const createHero: AsyncHandler = async (req, res, next) => {
   try {
     // req.body already validated
     const heroData = req.body as HeroInput; // It becomes typed as HeroInput
@@ -168,9 +166,7 @@ export const deleteHeroById = async (
     const db = await connectToDatabase();
     const heroId = new ObjectId(id);
 
-    const result = await db
-      .collection('heroes')
-      .deleteOne({ _id: heroId });
+    const result = await db.collection('heroes').deleteOne({ _id: heroId });
 
     if (result.deletedCount === 0) {
       const err = createError(404, 'Hero not found');
@@ -191,4 +187,3 @@ export const deleteHeroById = async (
     return next(err);
   }
 };
-
