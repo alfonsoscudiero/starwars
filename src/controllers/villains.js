@@ -5,7 +5,7 @@ const createError = require('http-errors');
 
 // MongoDB ObjectId utility and database connection
 const { ObjectId } = require('mongodb');
-const { connectToDatabase } = require('../../db/connection');
+const { connectToDatabase } = require('../db/connection');
 
 // Capitalization
 const capitalize = (str) =>
