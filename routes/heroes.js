@@ -10,7 +10,7 @@ const {
 } = require('../validators/validator-schema');
 const { validateBody, validateParams } = require('../middlewares/validator');
 
-const heroesController = require('../controllers/heroes');
+const heroesController = require('../src/controllers/heroes');
 
 // GET /api/heroes
 router.get(
