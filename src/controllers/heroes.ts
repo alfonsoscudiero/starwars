@@ -6,7 +6,7 @@ import createError from 'http-errors';
 
 // MongoDB ObjectId utility and database connection
 import { ObjectId } from 'mongodb';
-import { connectToDatabase } from '../../db/connection';
+import { connectToDatabase } from '../db/connection';
 
 // Reusable Request Body Type
 type HeroInput = {
@@ -14,7 +14,7 @@ type HeroInput = {
   lastName?: string | null;
   species: string;
   role: string;
-  homeWorld: string | null; 
+  homeWorld: string | null;
   weapon: string;
   powerLevel: number;
 };
@@ -45,11 +45,7 @@ const toHeroDoc = (value: HeroInput) => ({
 });
 
 // GET /api/heroes
-export const getHeroes : AsyncHandler = async (
-  _req,
-  res,
-  next
-) => {
+export const getHeroes: AsyncHandler = async (_req, res, next) => {
   try {
     const db = await connectToDatabase();
     const heroes = await db.collection('heroes').find({}).toArray();
