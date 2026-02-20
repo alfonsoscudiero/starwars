@@ -18,25 +18,43 @@ import createError from 'http-errors';
 
 // Swagger UI
 import swaggerUi from 'swagger-ui-express';
-const swaggerDocument = require('../swagger.json') as object;
+const swaggerDocument = require('../swagger.json') as Record<string, any>;
 
 // Database Connection
 import { connectToDatabase } from './db/connection';
 
+// Routes
+import heroesRoutes from './routes/heroes';
+import villainsRoutes from './routes/villains';
+
 // App creation
 const app = express();
+app.set('trust proxy', 1);
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.get('/swagger.json', (_req: Request, res: Response) => {
+  res.status(200).json(swaggerDocument);
+});
+
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  (req: Request, res: Response, next: NextFunction) => {
+    const doc = { ...swaggerDocument };
+
+    doc.host = req.get('host');
+
+    doc.schemes = [req.protocol];
+
+    return swaggerUi.setup(doc)(req, res, next);
+  }
+);
 
 // Server Configuration
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
-
-// Routes
-import heroesRoutes from './routes/heroes';
-import villainsRoutes from './routes/villains';
 
 // Endpoints
 app.get('/swagger.json', (_req: Request, res: Response) => {
