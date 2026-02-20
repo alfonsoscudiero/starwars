@@ -35,8 +35,11 @@ app.set('trust proxy', 1);
 app.use(cors());
 app.use(express.json());
 
-app.get('/swagger.json', (_req: Request, res: Response) => {
-  res.status(200).json(swaggerDocument);
+app.get('/swagger.json', (req: Request, res: Response) => {
+  const doc = { ...swaggerDocument };
+  doc.host = req.get('host');
+  doc.schemes = ['https']; // Render external is https
+  res.status(200).json(doc);
 });
 
 app.use(
