@@ -12,7 +12,9 @@ const isProd = process.env.NODE_ENV === 'production';
 
 const PUBLIC_HOST =
   process.env.PUBLIC_HOST ||
-  (isProd ? 'starwars-p3bg.onrender.com' : 'localhost:3000');
+  (isProd
+    ? process.env.RENDER_EXTERNAL_HOSTNAME || 'starwars-p3bg.onrender.com'
+    : 'localhost:3000');
 
 const PUBLIC_SCHEME = process.env.PUBLIC_SCHEME || (isProd ? 'https' : 'http');
 
