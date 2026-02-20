@@ -1,15 +1,16 @@
 {
   "name": "starwars",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
     "type-check": "tsc --noEmit",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "dev": "npm run swagger && nodemon server.js",
-    "swagger": "node ./swagger.js",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "swagger": "node dist/swagger.js",
+    "dev": "npm run build && npm run swagger && nodemon dist/server.js",
     "format": "prettier . --write",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
