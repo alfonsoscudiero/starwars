@@ -39,6 +39,10 @@ import heroesRoutes from './routes/heroes';
 import villainsRoutes from './routes/villains';
 
 // Endpoints
+app.get('/swagger.json', (_req: Request, res: Response) => {
+  res.status(200).json(swaggerDocument);
+});
+
 app.get(
   '/',
   /* #swagger.summary = 'API welcome and available endpoints' */

@@ -6,6 +6,7 @@ import swaggerAutogenFactory from 'swagger-autogen';
 // Invoke it to create the Swagger generator instance
 const swaggerAutogen = swaggerAutogenFactory();
 
+// Detect environment
 const isProd = process.env.NODE_ENV === 'production';
 // LOCAL http://localhost:3000
 // RENDER https://starwars-p3bg.onrender.com
