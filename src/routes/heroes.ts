@@ -2,6 +2,7 @@
  *  src/routes/heroes.ts
  * ************************** */
 import { Router } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 
 import { validateBody, validateParams } from '../middlewares/validator';
 import { characterSchema, idParamSchema } from '../validators/validator-schema';
@@ -9,7 +10,8 @@ import { characterSchema, idParamSchema } from '../validators/validator-schema';
 import * as heroesController from '../controllers/heroes';
 
 // AUTH PLACEHOLDER
-const requireAuth = (_req: unknown, _res: unknown, next: () => void) => next();
+const requireAuth = (_req: Request, _res: Response, next: NextFunction): void =>
+  next();
 
 const router = Router();
 
