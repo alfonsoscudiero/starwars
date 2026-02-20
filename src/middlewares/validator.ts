@@ -6,7 +6,7 @@ import type { Request, Response, NextFunction } from 'express';
 import type Joi from 'joi';
 import createError from 'http-errors';
 
-const defaultOptions = {
+const defaultOptions: Joi.ValidationOptions = {
   abortEarly: false,
   stripUnknown: true,
 };

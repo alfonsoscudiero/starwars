@@ -12,6 +12,8 @@
     //"types": [],
     // For nodejs:
     // "lib": ["esnext"],
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
     "types": ["node"],
     // and npm install -D @types/node
 

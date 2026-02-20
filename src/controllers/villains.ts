@@ -6,7 +6,7 @@ import createError from 'http-errors';
 
 // MongoDB ObjectId utility and database connection
 import { ObjectId } from 'mongodb';
-import { connectToDatabase } from '../db/connection';
+import { connectToDatabase } from '../db/connection.js';
 
 // Reusable Request Body Type
 type VillainInput = {
@@ -56,9 +56,8 @@ export const getVillains: AsyncHandler = async (_req, res, next) => {
     res.status(200).json(villains);
   } catch (error) {
     const err = createError(500, 'Server error');
-
-    err.publicMessage = 'Something went wrong while fetching villains';
-    err.help = 'Try again later. See /api-docs';
+    (err as any).publicMessage = 'Something went wrong while fetching villains';
+    (err as any).help = 'Try again later. See /api-docs';
     return next(err);
   }
 };
@@ -78,18 +77,17 @@ export const getVillainById = async (
 
     if (!villain) {
       const err = createError(404, 'Villain not found');
-
-      err.publicMessage = 'No villain exists with the provided id';
-      err.help = 'Use GET /api/villains to list valid ids.';
+      (err as any).publicMessage = 'No villain exists with the provided id';
+      (err as any).help = 'Use GET /api/villains to list valid ids.';
       return next(err);
     }
 
     res.status(200).json(villain);
   } catch (error) {
     const err = createError(500, 'Server error');
-
-    err.publicMessage = 'Something went wrong while fetching the villain';
-    err.help = 'Try again later. See /api-docs';
+    (err as any).publicMessage =
+      'Something went wrong while fetching the villain';
+    (err as any).help = 'Try again later. See /api-docs';
     return next(err);
   }
 };
@@ -107,9 +105,9 @@ export const createVillain: AsyncHandler = async (req, res, next) => {
     res.status(201).json({ id: result.insertedId });
   } catch (error) {
     const err = createError(500, 'Server error');
-
-    err.publicMessage = 'Something went wrong while creating the villain';
-    err.help = 'Try again later. See /api-docs';
+    (err as any).publicMessage =
+      'Something went wrong while creating the villain';
+    (err as any).help = 'Try again later. See /api-docs';
     return next(err);
   }
 };
@@ -136,18 +134,17 @@ export const updateVillainById = async (
 
     if (result.matchedCount === 0) {
       const err = createError(404, 'Villain not found');
-
-      err.publicMessage = 'No villain exists with the provided id';
-      err.help = 'Use GET /api/villains to list valid ids.';
+      (err as any).publicMessage = 'No villain exists with the provided id';
+      (err as any).help = 'Use GET /api/villains to list valid ids.';
       return next(err);
     }
 
     res.status(204).send();
   } catch (error) {
     const err = createError(500, 'Server error');
-
-    err.publicMessage = 'Something went wrong while updating the villain';
-    err.help = 'Try again later. See /api-docs';
+    (err as any).publicMessage =
+      'Something went wrong while updating the villain';
+    (err as any).help = 'Try again later. See /api-docs';
     return next(err);
   }
 };
@@ -169,9 +166,8 @@ export const deleteVillainById = async (
 
     if (result.deletedCount === 0) {
       const err = createError(404, 'Villain not found');
-
-      err.publicMessage = 'No villain exists with the provided id';
-      err.help = 'Use GET /api/villains to list valid ids.';
+      (err as any).publicMessage = 'No villain exists with the provided id';
+      (err as any).help = 'Use GET /api/villains to list valid ids.';
       return next(err);
     }
 
@@ -180,9 +176,9 @@ export const deleteVillainById = async (
     });
   } catch (error) {
     const err = createError(500, 'Server error');
-
-    err.publicMessage = 'Something went wrong while deleting the villain';
-    err.help = 'Try again later. See /api-docs';
+    (err as any).publicMessage =
+      'Something went wrong while deleting the villain';
+    (err as any).help = 'Try again later. See /api-docs';
     return next(err);
   }
 };

@@ -1,12 +1,16 @@
 /* ***************************
  *  src/routes/villains.ts
- * ************************** */ import { Router } from 'express';
+ * ************************** */
+import { Router } from 'express';
 import type { Request, Response, NextFunction } from 'express';
 
-import { validateBody, validateParams } from '../middlewares/validator';
-import { characterSchema, idParamSchema } from '../validators/validator-schema';
+import { validateBody, validateParams } from '../middlewares/validator.js';
+import {
+  characterSchema,
+  idParamSchema,
+} from '../validators/validator-schema.js';
 
-import * as villainsController from '../controllers/villains';
+import * as villainsController from '../controllers/villains.js';
 
 // AUTH PLACEHOLDER
 const requireAuth = (_req: Request, _res: Response, next: NextFunction): void =>

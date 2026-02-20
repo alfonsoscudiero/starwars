@@ -6,7 +6,7 @@ import createError from 'http-errors';
 
 // MongoDB ObjectId utility and database connection
 import { ObjectId } from 'mongodb';
-import { connectToDatabase } from '../db/connection';
+import { connectToDatabase } from '../db/connection.js';
 
 // Reusable Request Body Type
 type HeroInput = {
@@ -55,8 +55,8 @@ export const getHeroes: AsyncHandler = async (_req, res, next) => {
     res.status(200).json(heroes);
   } catch (error) {
     const err = createError(500, 'Server error');
-    err.publicMessage = 'Something went wrong while fetching heroes';
-    err.help = 'Try again later. See /api-docs';
+    (err as any).publicMessage = 'Something went wrong while fetching heroes';
+    (err as any).help = 'Try again later. See /api-docs';
     next(err);
   }
 };
@@ -76,18 +76,16 @@ export const getHeroById = async (
 
     if (!hero) {
       const err = createError(404, 'Hero not found');
-
-      err.publicMessage = 'No hero exists with the provided id';
-      err.help = 'Use GET /api/heroes to list valid ids.';
+      (err as any).publicMessage = 'No hero exists with the provided id';
+      (err as any).help = 'Use GET /api/heroes to list valid ids.';
       return next(err);
     }
 
     res.status(200).json(hero);
   } catch (error) {
     const err = createError(500, 'Server error');
-
-    err.publicMessage = 'Something went wrong while fetching the hero';
-    err.help = 'Try again later. See /api-docs';
+    (err as any).publicMessage = 'Something went wrong while fetching the hero';
+    (err as any).help = 'Try again later. See /api-docs';
     return next(err);
   }
 };
@@ -107,9 +105,8 @@ export const createHero: AsyncHandler = async (req, res, next) => {
     res.status(201).json({ id: result.insertedId });
   } catch (error) {
     const err = createError(500, 'Server error');
-
-    err.publicMessage = 'Something went wrong while creating the hero';
-    err.help = 'Try again later. See /api-docs';
+    (err as any).publicMessage = 'Something went wrong while creating the hero';
+    (err as any).help = 'Try again later. See /api-docs';
     return next(err);
   }
 };
@@ -137,9 +134,8 @@ export const updateHeroById = async (
     // If no document matched that _id
     if (result.matchedCount === 0) {
       const err = createError(404, 'Hero not found');
-
-      err.publicMessage = 'No hero exists with the provided id';
-      err.help = 'Use GET /api/heroes to list valid ids.';
+      (err as any).publicMessage = 'No hero exists with the provided id';
+      (err as any).help = 'Use GET /api/heroes to list valid ids.';
       return next(err);
     }
 
@@ -147,9 +143,8 @@ export const updateHeroById = async (
     res.status(204).send();
   } catch (error) {
     const err = createError(500, 'Server error');
-
-    err.publicMessage = 'Something went wrong while updating the hero';
-    err.help = 'Try again later. See /api-docs';
+    (err as any).publicMessage = 'Something went wrong while updating the hero';
+    (err as any).help = 'Try again later. See /api-docs';
     return next(err);
   }
 };
@@ -170,9 +165,8 @@ export const deleteHeroById = async (
 
     if (result.deletedCount === 0) {
       const err = createError(404, 'Hero not found');
-
-      err.publicMessage = 'No hero exists with the provided id';
-      err.help = 'Use GET /api/heroes to list valid ids.';
+      (err as any).publicMessage = 'No hero exists with the provided id';
+      (err as any).help = 'Use GET /api/heroes to list valid ids.';
       return next(err);
     }
 
@@ -181,9 +175,8 @@ export const deleteHeroById = async (
     });
   } catch (error) {
     const err = createError(500, 'Server error');
-
-    err.publicMessage = 'Something went wrong while deleting the hero';
-    err.help = 'Try again later. See /api-docs';
+    (err as any).publicMessage = 'Something went wrong while deleting the hero';
+    (err as any).help = 'Try again later. See /api-docs';
     return next(err);
   }
 };

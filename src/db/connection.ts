@@ -3,11 +3,12 @@
  * *************************************** */
 import { MongoClient, type Db } from 'mongodb';
 
-// Cached database instance to the connected MongoDB database
+// Cached MongoClient & database instance to the connected MongoDB database
+let client: MongoClient | undefined;
 let db: Db | undefined;
 
 // Connect to MongoDB
-export async function connectToDatabase() {
+export async function connectToDatabase(): Promise<Db> {
   if (db) {
     return db;
   }
@@ -24,8 +25,11 @@ export async function connectToDatabase() {
     throw new Error('[db/connection] DB_NAME is not defined in .env');
   }
 
-  const client = new MongoClient(uri);
-  await client.connect();
+  if (!client) {
+    client = new MongoClient(uri);
+    await client.connect();
+    console.log('[db/connection] MongoClient connected');
+  }
 
   db = client.db(dbName);
   console.log(`[db/connection] Connected to MongoDB database: ${dbName}`);
