@@ -7,17 +7,16 @@ import swaggerAutogenFactory from 'swagger-autogen';
 const swaggerAutogen = swaggerAutogenFactory();
 
 // Detect environment
-const isProd = process.env.NODE_ENV === 'production';
-// LOCAL http://localhost:3000
-// RENDER https://starwars-p3bg.onrender.com
+const isRender = Boolean(process.env.RENDER_EXTERNAL_HOSTNAME);
 
 const PUBLIC_HOST =
+  process.env.RENDER_EXTERNAL_HOSTNAME ||
   process.env.PUBLIC_HOST ||
-  (isProd
-    ? process.env.RENDER_EXTERNAL_HOSTNAME || 'starwars-p3bg.onrender.com'
-    : 'localhost:3000');
+  'localhost:3000';
 
-const PUBLIC_SCHEME = process.env.PUBLIC_SCHEME || (isProd ? 'https' : 'http');
+const PUBLIC_SCHEME = isRender
+  ? 'https'
+  : process.env.PUBLIC_SCHEME || 'http';
 
 const doc = {
   info: {
