@@ -11,7 +11,7 @@ const {
 } = require('../validators/validator-schema');
 const { validateBody, validateParams } = require('../middlewares/validator');
 
-const villainsController = require('../src/controllers/villains');
+const villainsController = require('../controllers/villains');
 
 // GET /api/villains
 router.get(

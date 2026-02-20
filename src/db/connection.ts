@@ -32,4 +32,3 @@ export async function connectToDatabase() {
 
   return db;
 }
-

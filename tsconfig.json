@@ -29,6 +29,7 @@
     // "noImplicitOverride": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "removeComments": false,
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
 
