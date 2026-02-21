@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "dist/server.js",
   "scripts": {
-    "saas": "sass --no-source-map --watch public/scss/styles.scss:public/css/styles.css",
     "type-check": "tsc --noEmit",
     "build": "tsc",
     "start": "node dist/server.js",
@@ -13,12 +12,11 @@
     "lint": "eslint ."
   },
   "keywords": [],
-  "author": "",
+  "author": "Alfonso Scudiero",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.2.0",
-    "bootstrap": "^5.3.8",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "ejs": "^4.0.1",
@@ -36,13 +34,13 @@
     "@types/express-ejs-layouts": "^2.5.4",
     "@types/node": "^25.3.0",
     "@types/swagger-ui-express": "^4.1.8",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "globals": "^17.3.0",
     "nodemon": "^3.1.11",
     "prettier": "^3.8.1",
-    "sass": "^1.97.3",
     "typescript": "^5.9.3"
   }
 }
