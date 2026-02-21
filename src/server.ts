@@ -80,7 +80,16 @@ app.get('/', (_req: Request, res: Response) => {
   // Render: /views/index.ejs (injected into /views/layout/layout.ejs)
   res.status(200).render('index', {
     pageTitle: 'Star Wars API',
+    user: null, //temporarily disable authentication
   });
+});
+
+app.get('/heroes', (_req: Request, res: Response) => {
+  res.status(200).render('heroes', { pageTitle: 'Star Wars Heroes' });
+});
+
+app.get('/villains', (_req: Request, res: Response) => {
+  res.render('villains', { pageTitle: 'Star Wars Villains' });
 });
 
 // API Entry - JSON
