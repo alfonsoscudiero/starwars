@@ -85,7 +85,7 @@ app.get('/', (_req: Request, res: Response) => {
 
 // API Entry - JSON
 app.get(
-  '/',
+  '/api',
   /* #swagger.summary = 'API welcome and available endpoints' */
   /* #swagger.description = 'Returns a welcome message and a list of available Star Wars API endpoints.' */
 

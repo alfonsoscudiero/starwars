@@ -3,3 +3,4 @@ node_modules
 data
 swagger.json
 dist/
+archive_js_files/
