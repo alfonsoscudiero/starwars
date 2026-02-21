@@ -1,26 +1,24 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-top border-secondary shadow-sm">
-  <div class="container">
+<nav class="site-nav">
+  <div class="site-nav__inner">
 
-    <!-- Logo / Brand -->
-    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+    <!-- Logo -->
+    <a class="site-nav_logo" href="/" aria-label="Star Wars API Home">
       <img
         src="/img/logo/starwars-app-logo.webp"
-        alt="Star Wars API"
-        width="44"
-        height="44"
-        class="d-inline-block align-text-top"
+        alt="Star Wars API Logo"
+        width="50"
+        height="50"
       >
     </a>
 
-    <!-- Right-side controls (Login + Toggle) -->
-    <div class="d-flex align-items-center gap-2 order-lg-2">
-
+    <!-- Auth button -->
+    <div class="site-nav_auth">
       <% if (!user) { %>
-        <a href="/login" class="btn btn-outline-warning btn-sm px-3">
+        <a href="/login" class="btn btn-outline">
           Login
         </a>
       <% } else { %>
-        <a href="/logout" class="btn btn-warning btn-sm px-3">
+        <a href="/logout" class="btn btn-primary">
           Logout
         </a>
       <% } %>
