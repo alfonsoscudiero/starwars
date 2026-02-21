@@ -14,9 +14,7 @@ const PUBLIC_HOST =
   process.env.PUBLIC_HOST ||
   'localhost:3000';
 
-const PUBLIC_SCHEME = isRender
-  ? 'https'
-  : process.env.PUBLIC_SCHEME || 'http';
+const PUBLIC_SCHEME = isRender ? 'https' : process.env.PUBLIC_SCHEME || 'http';
 
 const doc = {
   info: {

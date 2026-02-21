@@ -4,11 +4,15 @@
 // Load Environment variables
 import 'dotenv/config';
 
+import path from 'path';
 import express, {
   type NextFunction,
   type Request,
   type Response,
 } from 'express';
+
+// EJS Layouts
+import expressLayouts from 'express-ejs-layouts';
 
 // CORS imports
 import cors from 'cors';
@@ -31,27 +35,39 @@ import villainsRoutes from './routes/villains';
 const app = express();
 app.set('trust proxy', 1);
 
-// Middleware
+// View Engine + Layout Setup
+const VIEWS_PATH = path.join(process.cwd(), 'views');
+const PUBLIC_PATH = path.join(process.cwd(), 'public');
+
+app.set('view engine', 'ejs');
+app.set('views', VIEWS_PATH);
+
+// Express layouts
+app.use(expressLayouts);
+app.set('layout', 'layout/layout');
+
+// Global Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(PUBLIC_PATH));
 
+// Swagger
 app.get('/swagger.json', (req: Request, res: Response) => {
   const doc = { ...swaggerDocument };
   doc.host = req.get('host');
   doc.schemes = ['https']; // Render external is https
   res.status(200).json(doc);
 });
-
+// Serve Swagger UI with dynamic host/scheme
 app.use(
   '/api-docs',
   swaggerUi.serve,
   (req: Request, res: Response, next: NextFunction) => {
     const doc = { ...swaggerDocument };
-
+    // // Dynamically set host and scheme
     doc.host = req.get('host');
-
     doc.schemes = [req.protocol];
-
     return swaggerUi.setup(doc)(req, res, next);
   }
 );
@@ -59,11 +75,15 @@ app.use(
 // Server Configuration
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
-// Endpoints
-app.get('/swagger.json', (_req: Request, res: Response) => {
-  res.status(200).json(swaggerDocument);
+// Home Page
+app.get('/', (_req: Request, res: Response) => {
+  // Render: /views/index.ejs (injected into /views/layout/layout.ejs)
+  res.status(200).render('index', {
+    pageTitle: 'Star Wars API',
+  });
 });
 
+// API Entry - JSON
 app.get(
   '/',
   /* #swagger.summary = 'API welcome and available endpoints' */
@@ -100,6 +120,8 @@ app.get(
     });
   }
 );
+
+// API Routes
 app.use('/api/heroes', heroesRoutes);
 app.use('/api/villains', villainsRoutes);
 
