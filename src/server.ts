@@ -33,6 +33,7 @@ import villainsRoutes from './routes/villains';
 
 // Routes (Render EJS)
 import heroesViewRoutes from './routes/heroes-view';
+import villainsViewRoutes from './routes/villains-view';
 
 // App creation
 const app = express();
@@ -87,12 +88,14 @@ app.get('/', (_req: Request, res: Response) => {
   });
 });
 
-app.get('/villains', (_req: Request, res: Response) => {
-  res.render('villains', { pageTitle: 'Star Wars Villains' });
-});
+// app.get('/villains', (_req: Request, res: Response) => {
+//   res.render('villains', { pageTitle: 'Star Wars Villains' });
+// });
 
 // Render Routes
 app.use('/heroes', heroesViewRoutes);
+
+app.use('/villains', villainsViewRoutes);
 
 // 404 for non-API routes (Render EJS page, NO layout)
 app.use((_req: Request, res: Response) => {
@@ -153,38 +156,41 @@ app.use('/api/', (_req: Request, _res: Response, next: NextFunction) => {
 // Centralized error-handling
 app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
   const statusCode = err.statusCode || err.status || 500;
+  const isApiRoute = req.originalUrl.startsWith('/api');
+
+  // For Render routes, return an HTML error page
+  if (!isApiRoute) {
+    return res.status(statusCode).render('errors/error', {
+      layout: false,
+      pageTitle: statusCode === 404 ? 'Error 404' : 'Server Error',
+      user: null,
+    });
+  }
+
+  // For API routes, return standardized JSON
   const isClientError = statusCode >= 400 && statusCode < 500;
 
-  // Standardized JSON error contract
   const responseBody: Record<string, unknown> = {
     statusCode,
     message: err.message || (isClientError ? 'Request failed' : 'Server error'),
-
     error: isClientError
       ? err.publicMessage || err.message || 'Request could not be processed'
       : 'Unexpected error',
-
-    // Tells the client where to look next
     help: err.help || 'See /api-docs for usage requirements',
-
-    // Helpful debugging metadata
     timestamp: new Date().toISOString(),
     path: req.originalUrl,
     method: req.method,
   };
 
-  // Include Joi validation details when provided
   if (Array.isArray(err.details) && err.details.length > 0) {
     responseBody.details = err.details;
   }
 
-  // Log server-side details for unexpected errors (5xx)
   if (!isClientError) {
-    // eslint-disable-next-line no-console
     console.error(err);
   }
 
-  res.status(statusCode).json(responseBody);
+  return res.status(statusCode).json(responseBody);
 });
 
 // Connect to MongoDB and start the server
