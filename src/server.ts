@@ -134,9 +134,17 @@ app.get(
 app.use('/api/heroes', heroesRoutes);
 app.use('/api/villains', villainsRoutes);
 
-// 404 Not Found Handler
-app.use((_req: Request, _res: Response, next: NextFunction) => {
-  next(createError(404, 'Not found'));
+// 404 ONLY for API routes (JSON response)
+app.use('/api/', (_req: Request, _res: Response, next: NextFunction) => {
+  next(createError(404, 'API route not found'));
+});
+
+// 404 for non-API routes (Render EJS page, NO layout)
+app.use((_req: Request, res: Response) => {
+  res.status(404).render('errors/error', {
+    layout: false,     
+    pageTitle: 'Error 404', 
+  });
 });
 
 // Centralized error-handling
