@@ -294,7 +294,7 @@ h1 {
   place-items: center;
   padding: 2rem;
 
-  background-image: url('/img/bg/error-404.jpeg');
+  background-image: url('/img/bg/heroes.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -307,7 +307,7 @@ h1 {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.80);
+  background: rgba(0, 0, 0, 0.8);
   z-index: -1;
 }
 
@@ -330,6 +330,73 @@ h1 {
   border-width: 2px;
   border-radius: 1rem;
   font-size: 1.1rem;
+}
+
+/* ============= HEROES INDEX PAGE ============== */
+#main-content:has(.heroes-hero) {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.heroes-hero {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 30px - 72px);
+  padding: 4.5rem 1.5rem;
+
+  background-image: url('/img/bg/heroes.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  color: var(--white);
+}
+
+.heroes-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.heroes-hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero-row {
+  display: grid;
+  grid-template-columns: 260px 180px;
+  align-items: center;
+  column-gap: 5rem;
+  margin-bottom: 1.75rem;
+}
+
+.hero-name {
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 1.5rem);
+  letter-spacing: 0.1rem;
+  font-weight: 700;
+  color: var(--yellow);
+}
+
+.heroes-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  padding-top: 0.25rem;
+}
+
+.btn-hero-details {
+  border-width: 2px;
+  border-radius: 1rem;
+  padding: .75rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: .15rem;
 }
 
 /* ================= FOOTER ================= */

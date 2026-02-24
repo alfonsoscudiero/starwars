@@ -27,9 +27,12 @@ const swaggerDocument = require('../swagger.json') as Record<string, any>;
 // Database Connection
 import { connectToDatabase } from './db/connection';
 
-// Routes
+// Routes (API JSON)
 import heroesRoutes from './routes/heroes';
 import villainsRoutes from './routes/villains';
+
+// Routes (Render EJS)
+import heroesViewRoutes from './routes/heroes-view';
 
 // App creation
 const app = express();
@@ -75,24 +78,32 @@ app.use(
 // Server Configuration
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
-// Home Page
+// Render Routes (EJS)
+// Home Page (public)
 app.get('/', (_req: Request, res: Response) => {
-  // Render: /views/index.ejs (injected into /views/layout/layout.ejs)
   res.status(200).render('index', {
     pageTitle: 'Star Wars API',
-    user: null, //temporarily disable authentication
+    user: null,
   });
-});
-
-app.get('/heroes', (_req: Request, res: Response) => {
-  res.status(200).render('heroes', { pageTitle: 'Star Wars Heroes' });
 });
 
 app.get('/villains', (_req: Request, res: Response) => {
   res.render('villains', { pageTitle: 'Star Wars Villains' });
 });
 
-// API Entry - JSON
+// Render Routes
+app.use('/heroes', heroesViewRoutes);
+
+// 404 for non-API routes (Render EJS page, NO layout)
+app.use((_req: Request, res: Response) => {
+  res.status(404).render('errors/error', {
+    layout: false,
+    pageTitle: 'Error 404',
+    user: null,
+  });
+});
+
+// API Routes
 app.get(
   '/api',
   /* #swagger.summary = 'API welcome and available endpoints' */
@@ -137,14 +148,6 @@ app.use('/api/villains', villainsRoutes);
 // 404 ONLY for API routes (JSON response)
 app.use('/api/', (_req: Request, _res: Response, next: NextFunction) => {
   next(createError(404, 'API route not found'));
-});
-
-// 404 for non-API routes (Render EJS page, NO layout)
-app.use((_req: Request, res: Response) => {
-  res.status(404).render('errors/error', {
-    layout: false,     
-    pageTitle: 'Error 404', 
-  });
 });
 
 // Centralized error-handling

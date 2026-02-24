@@ -1,0 +1,17 @@
+<%# Views/heroes.index.ejs %> 
+<section class="heroes-hero">
+  <div class="heroes-hero-inner">
+    <% heroes.forEach((hero) => { %>
+      <div class="hero-row">
+        <span class="hero-name">
+          <%= hero.firstName %> <%= hero.lastName || "" %>
+        </span>
+
+        <a class="btn btn-outline btn-hero-details"
+           href="/heroes/<%= hero._id %>">
+          View Details
+        </a>
+      </div>
+    <% }) %>
+  </div>
+</section>
