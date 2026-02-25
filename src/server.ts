@@ -75,9 +75,14 @@ app.use(
     secret: process.env.SESSION_SECRET as string,
     resave: false,
     saveUninitialized: false,
+    rolling: true, //timeout after inactivity
     cookie: {
       secure: process.env.NODE_ENV === 'production', // Render is HTTPS
       sameSite: 'lax',
+      maxAge:
+        process.env.NODE_ENV === 'production'
+          ? 1000 * 60 * 60 // 1 hour
+          : 1000 * 60 * 60 * 4, // 4 hours
     },
   })
 );
@@ -176,6 +181,14 @@ app.use('/api/villains', villainsRoutes);
 // 404 ONLY for API routes (JSON response via error handler)
 app.use('/api/', (_req: Request, _res: Response, next: NextFunction) => {
   next(createError(404, 'API route not found'));
+});
+
+// Temporary debug route
+app.get('/session-debug', (req, res) => {
+  res.json({
+    isAuthenticated: req.isAuthenticated?.(),
+    user: req.user ?? null,
+  });
 });
 
 /* ========= 404 for non-API routes (Render EJS page, NO layout) ======== */
