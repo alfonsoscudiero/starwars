@@ -43,6 +43,8 @@ import villainsViewRoutes from './routes/villains-view';
 
 // App creation
 const app = express();
+
+// Render runs behind a proxy
 app.set('trust proxy', 1);
 
 // View Engine + Layout Setup
@@ -74,7 +76,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === 'production', // Render is HTTPS externally
+      secure: process.env.NODE_ENV === 'production', // Render is HTTPS
       sameSite: 'lax',
     },
   })
@@ -84,7 +86,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Inject user globally
+// Inject authenticated user globally (available in all EJS views)
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.locals.user = (req as any).user ?? null;
   next();
@@ -93,11 +95,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Auth routes (GitHub OAuth)
 app.use('/auth', authRoutes);
 
-// Swagger
+// Swagger (host/scheme set dynamically)
 app.get('/swagger.json', (req: Request, res: Response) => {
   const doc = { ...swaggerDocument };
   doc.host = req.get('host');
-  doc.schemes = ['https']; // Render external is https
+  // doc.schemes = ['https'];  Render external is https
+  doc.schemes = [req.protocol];
   res.status(200).json(doc);
 });
 
@@ -117,7 +120,7 @@ app.use(
 // Server Configuration
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
-// Render Routes (EJS)
+/* ============= Render Routes (EJS) ============== */
 // Home Page (public)
 app.get('/', (_req: Request, res: Response) => {
   res.status(200).render('index', {
@@ -129,16 +132,7 @@ app.get('/', (_req: Request, res: Response) => {
 app.use('/heroes', heroesViewRoutes);
 app.use('/villains', villainsViewRoutes);
 
-// 404 for non-API routes (Render EJS page, NO layout)
-app.use((_req: Request, res: Response) => {
-  res.status(404).render('errors/error', {
-    layout: false,
-    pageTitle: 'Error 404',
-    user: null,
-  });
-});
-
-// API Routes
+/* ============= API Routes (JSON) ============== */
 app.get(
   '/api',
   /* #swagger.summary = 'API welcome and available endpoints' */
@@ -179,12 +173,20 @@ app.get(
 app.use('/api/heroes', heroesRoutes);
 app.use('/api/villains', villainsRoutes);
 
-// 404 ONLY for API routes (JSON response)
+// 404 ONLY for API routes (JSON response via error handler)
 app.use('/api/', (_req: Request, _res: Response, next: NextFunction) => {
   next(createError(404, 'API route not found'));
 });
 
-// Centralized error-handling
+/* ========= 404 for non-API routes (Render EJS page, NO layout) ======== */
+app.use((_req: Request, res: Response) => {
+  res.status(404).render('errors/error', {
+    layout: false,
+    pageTitle: 'Error 404',
+  });
+});
+
+/* ========= Centralized error-handling ======== */
 app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
   const statusCode = err.statusCode || err.status || 500;
   const isApiRoute = req.originalUrl.startsWith('/api');
@@ -194,7 +196,6 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
     return res.status(statusCode).render('errors/error', {
       layout: false,
       pageTitle: statusCode === 404 ? 'Error 404' : 'Server Error',
-      user: null,
     });
   }
 
@@ -224,7 +225,7 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
   return res.status(statusCode).json(responseBody);
 });
 
-// Connect to MongoDB and start the server
+/* ========= Connect to MongoDB and start the server ======== */
 async function startServer() {
   try {
     // Verify DB connection
