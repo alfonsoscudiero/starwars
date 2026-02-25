@@ -3,7 +3,7 @@
  * ************************** */
 import passport from 'passport';
 import { Strategy as GitHubStrategy, Profile } from 'passport-github2';
-import type { VerifyCallback } from "passport-oauth2";
+import type { VerifyCallback } from 'passport-oauth2';
 
 // Check the current environment
 const isProd = process.env.NODE_ENV === 'production';
@@ -27,12 +27,18 @@ passport.deserializeUser((obj, done) => done(null, obj as any));
 
 // Verify callback
 passport.use(
-  new GitHubStrategy(    {
+  new GitHubStrategy(
+    {
       clientID,
       clientSecret,
       callbackURL: '/auth/github/callback',
     },
-    (_accessToken: string, _refreshToken: string, profile: Profile, done: VerifyCallback) => {
+    (
+      _accessToken: string,
+      _refreshToken: string,
+      profile: Profile,
+      done: VerifyCallback
+    ) => {
       return done(null, profile);
     }
   )
