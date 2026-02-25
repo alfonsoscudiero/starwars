@@ -11,6 +11,12 @@ import express, {
   type Response,
 } from 'express';
 
+// Sessions + Auth
+import session from 'express-session';
+import passport from 'passport';
+import './config/passport';
+import authRoutes from './routes/auth-routes';
+
 // EJS Layouts
 import expressLayouts from 'express-ejs-layouts';
 
@@ -56,6 +62,37 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(PUBLIC_PATH));
 
+// Sessions
+if (!process.env.SESSION_SECRET) {
+  throw new Error('Missing SESSION_SECRET in environment variables.');
+}
+
+// Session middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET as string,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production', // Render is HTTPS externally
+      sameSite: 'lax',
+    },
+  })
+);
+
+// Passport init
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Inject user globally
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.locals.user = (req as any).user ?? null;
+  next();
+});
+
+// Auth routes (GitHub OAuth)
+app.use('/auth', authRoutes);
+
 // Swagger
 app.get('/swagger.json', (req: Request, res: Response) => {
   const doc = { ...swaggerDocument };
@@ -63,13 +100,14 @@ app.get('/swagger.json', (req: Request, res: Response) => {
   doc.schemes = ['https']; // Render external is https
   res.status(200).json(doc);
 });
+
 // Serve Swagger UI with dynamic host/scheme
 app.use(
   '/api-docs',
   swaggerUi.serve,
   (req: Request, res: Response, next: NextFunction) => {
     const doc = { ...swaggerDocument };
-    // // Dynamically set host and scheme
+    // Dynamically set host and scheme
     doc.host = req.get('host');
     doc.schemes = [req.protocol];
     return swaggerUi.setup(doc)(req, res, next);
@@ -84,17 +122,11 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 app.get('/', (_req: Request, res: Response) => {
   res.status(200).render('index', {
     pageTitle: 'Star Wars API',
-    user: null,
   });
 });
 
-// app.get('/villains', (_req: Request, res: Response) => {
-//   res.render('villains', { pageTitle: 'Star Wars Villains' });
-// });
-
 // Render Routes
 app.use('/heroes', heroesViewRoutes);
-
 app.use('/villains', villainsViewRoutes);
 
 // 404 for non-API routes (Render EJS page, NO layout)
@@ -144,7 +176,6 @@ app.get(
   }
 );
 
-// API Routes
 app.use('/api/heroes', heroesRoutes);
 app.use('/api/villains', villainsRoutes);
 
