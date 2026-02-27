@@ -196,12 +196,12 @@ app.use('/api/', (_req: Request, _res: Response, next: NextFunction) => {
 });
 
 // Temporary debug route
-// app.get('/session-debug', (req, res) => {
-//   res.json({
-//     isAuthenticated: req.isAuthenticated?.(),
-//     user: req.user ?? null,
-//   });
-// });
+app.get('/session-debug', (req, res) => {
+  res.json({
+    isAuthenticated: req.isAuthenticated?.(),
+    user: req.user ?? null,
+  });
+});
 
 /* ========= 404 for non-API routes (Render EJS page, NO layout) ======== */
 app.use((_req: Request, res: Response) => {
