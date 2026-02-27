@@ -1,33 +1,17 @@
 /* ***************************
  *  src/routes/villains-view.ts
  * ************************** */
+
 import { Router } from 'express';
-import type { Request, Response, NextFunction } from 'express';
-
-import { validateBody, validateParams } from '../middlewares/validator.js';
-import {
-  characterSchema,
-  idParamSchema,
-} from '../validators/validator-schema.js';
-
-import * as villainsController from '../controllers/villains-view.js';
-
-// AUTH PLACEHOLDER
-const requireAuth = (_req: Request, _res: Response, next: NextFunction): void =>
-  next();
+import * as villainsController from '../controllers/villains-view';
+import { requireAuth } from '../middlewares/require-auth';
 
 const router = Router();
 
-// GET /Villains (public render page)
-router.get(
-  '/',
-  /* #swagger.summary = 'Get all Star Wars Villains' */
-  /* #swagger.description = 'Render all Villains stored in the database.' */
+// Public
+router.get('/', villainsController.renderVillainsIndex);
 
-  /* #swagger.responses[200] = { description: 'List of Villains' } */
-  /* #swagger.responses[500] = { description: 'Internal server error' } */
-
-  villainsController.renderVillainsIndex
-);
+// Auth-only (optional demo route)
+router.get('/manage', requireAuth, villainsController.renderVillainsIndex);
 
 export default router;
