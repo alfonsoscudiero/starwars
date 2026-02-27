@@ -1,6 +1,9 @@
 /* ***************************
  *  src/routes/auth-routes.ts
- * ************************** */
+ * ************************** 
+ * auth-routes.ts handles *logging in/out* via GitHub OAuth
+ */
+
 import { Router, Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 
