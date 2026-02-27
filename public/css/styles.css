@@ -480,3 +480,8 @@ h1 {
   text-underline-offset: 0.2rem;
   opacity: 0.9;
 }
+
+/* ============= NAVIGATION EJS ================= */
+.site-nav-auth form {
+  display: inline;
+}

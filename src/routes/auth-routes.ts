@@ -1,12 +1,12 @@
 /* ***************************
  *  src/routes/auth-routes.ts
  * ************************** */
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 
 const router = Router();
 
-// GET /auth/github - Start OAuth with GitHub
+// GET /auth/github - Login sends the browser to GitHub OAuth
 router.get(
   '/github',
   passport.authenticate('github', { scope: ['user:email'] })
@@ -22,12 +22,30 @@ router.get(
   }
 );
 
-// Logout
-router.post('/logout', (req, res, next) => {
-  (req as any).logout((err: any) => {
-    if (err) return next(err);
-    res.redirect('/');
-  });
-});
+// POST /auth/logout - Logout submits a POST form
+router.post(
+  '/logout',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await new Promise<void>((resolve, reject) =>
+        req.logout((err) => (err ? reject(err) : resolve()))
+      );
+
+      await new Promise<void>((resolve, reject) =>
+        req.session.destroy((err) => (err ? reject(err) : resolve()))
+      );
+
+      res.clearCookie('connect.sid', {
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+      });
+
+      res.redirect('/');
+    } catch (error: unknown) {
+      next(error);
+    }
+  }
+);
 
 export default router;
