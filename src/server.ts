@@ -100,6 +100,18 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Auth routes (GitHub OAuth)
 app.use('/auth', authRoutes);
 
+/* ============= Routes EJS buttons ============== */
+// GET /login
+app.get('/login', (_req: Request, res: Response) => {
+  res.redirect('/auth/github');
+});
+
+// POST /logout
+app.post('/logout', (req: Request, res: Response, next: NextFunction) => {
+  req.url = '/logout';
+  authRoutes(req, res, next);
+});
+
 // Swagger (host/scheme set dynamically)
 app.get('/swagger.json', (req: Request, res: Response) => {
   const doc = { ...swaggerDocument };
@@ -184,12 +196,12 @@ app.use('/api/', (_req: Request, _res: Response, next: NextFunction) => {
 });
 
 // Temporary debug route
-app.get('/session-debug', (req, res) => {
-  res.json({
-    isAuthenticated: req.isAuthenticated?.(),
-    user: req.user ?? null,
-  });
-});
+// app.get('/session-debug', (req, res) => {
+//   res.json({
+//     isAuthenticated: req.isAuthenticated?.(),
+//     user: req.user ?? null,
+//   });
+// });
 
 /* ========= 404 for non-API routes (Render EJS page, NO layout) ======== */
 app.use((_req: Request, res: Response) => {
