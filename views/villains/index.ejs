@@ -1,17 +1,56 @@
-<%# views/villains.index.ejs %> 
+<%# views/villains/index.ejs %>
+
 <section class="villains-hero">
   <div class="villains-hero-inner">
-    <% villains.forEach((villain) => { %>
-      <div class="hero-row">
-        <span class="hero-name">
-          <%= villain.firstName %> <%= villain.lastName || "" %>
-        </span>
 
-        <a class="btn btn-outline btn-hero-details"
-           href="/villains/<%= villain._id %>">
-          View Details
+    <% if (user) { %>
+      <div class="villains-welcome">
+        Welcome <%= user.displayName || user.username || "User" %>
+      </div>
+    <% } %>
+
+    <% if (!villains || villains.length === 0) { %>
+      <div class="hero-row">
+        <span class="hero-name">No villains found.</span>
+      </div>
+    <% } else { %>
+
+      <% villains.forEach((villain) => { %>
+        <div class="hero-row">
+          <span class="hero-name">
+            <%= villain.firstName %> <%= villain.lastName || "" %>
+          </span>
+
+          <div class="hero-actions">
+            <a class="btn btn-outline btn-hero-details"
+               href="/villains/<%= villain._id %>">
+              View Details
+            </a>
+
+            <% if (user) { %>
+              <a class="btn btn-outline btn-hero-edit"
+                 href="/villains/<%= villain._id %>/edit">
+                Edit
+              </a>
+
+              <a class="btn btn-outline btn-hero-delete"
+                 href="/villains/<%= villain._id %>/delete">
+                Delete
+              </a>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+
+    <% } %>
+
+    <% if (user) { %>
+      <div class="hero-create-wrap">
+        <a class="btn btn-primary btn-hero-create" href="/villains/new">
+          Create New
         </a>
       </div>
-    <% }) %>
+    <% } %>
+
   </div>
 </section>

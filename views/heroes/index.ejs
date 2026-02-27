@@ -1,17 +1,54 @@
-<%# Views/heroes.index.ejs %> 
 <section class="heroes-hero">
   <div class="heroes-hero-inner">
-    <% heroes.forEach((hero) => { %>
-      <div class="hero-row">
-        <span class="hero-name">
-          <%= hero.firstName %> <%= hero.lastName || "" %>
-        </span>
 
-        <a class="btn btn-outline btn-hero-details"
-           href="/heroes/<%= hero._id %>">
-          View Details
+    <% if (user) { %>
+      <div class="heroes-welcome">
+        Welcome <%= user.displayName || user.username || "User" %>
+      </div>
+    <% } %>
+
+    <% if (!heroes || heroes.length === 0) { %>
+      <div class="hero-row">
+        <span class="hero-name">No heroes found.</span>
+      </div>
+    <% } else { %>
+
+      <% heroes.forEach((hero) => { %>
+        <div class="hero-row">
+          <span class="hero-name">
+            <%= hero.firstName %> <%= hero.lastName || "" %>
+          </span>
+
+          <div class="hero-actions">
+            <a class="btn btn-outline btn-hero-details"
+               href="/heroes/<%= hero._id %>">
+              View Details
+            </a>
+
+            <% if (user) { %>
+              <a class="btn btn-outline btn-hero-edit"
+                 href="/heroes/<%= hero._id %>/edit">
+                Edit
+              </a>
+
+              <a class="btn btn-outline btn-hero-delete"
+                 href="/heroes/<%= hero._id %>/delete">
+                Delete
+              </a>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+
+    <% } %>
+
+    <% if (user) { %>
+      <div class="hero-create-wrap">
+        <a class="btn btn-primary btn-hero-create" href="/heroes/new">
+          Create New
         </a>
       </div>
-    <% }) %>
+    <% } %>
+
   </div>
 </section>

@@ -22,8 +22,7 @@ export const renderVillainsIndex = async (
     });
   } catch (_error) {
     const err = createError(500, 'Server error');
-    (err as any).publicMessage =
-      'Something went wrong while fetching villains';
+    (err as any).publicMessage = 'Something went wrong while fetching villains';
     (err as any).help = 'Try again later.';
     next(err);
   }

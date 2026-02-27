@@ -1,6 +1,6 @@
 /* ***************************
  *  src/routes/auth-routes.ts
- * ************************** 
+ * **************************
  * auth-routes.ts handles *logging in/out* via GitHub OAuth
  */
 

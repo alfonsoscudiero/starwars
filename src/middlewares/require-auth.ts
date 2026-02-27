@@ -1,7 +1,7 @@
 /* ********************************
  *  src/middlewares/require-auth.ts
  * **********************************
- * - require-auth.ts handles *authorization* for app routes 
+ * - require-auth.ts handles *authorization* for app routes
  */
 
 import type { Request, Response, NextFunction } from 'express';
