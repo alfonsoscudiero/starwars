@@ -14,13 +14,15 @@
     <!-- Auth button -->
     <div class="site-nav-auth">
       <% if (!user) { %>
-        <a href="/login" class="btn btn-outline">
+        <a href="/auth/github" class="btn btn-outline">
           Login
         </a>
       <% } else { %>
-        <a href="/logout" class="btn btn-primary">
-          Logout
-        </a>
+        <form action="/auth/logout" method="POST">
+          <button type="submit" class="btn btn-primary">
+            Logout
+          </button>
+        </form>
       <% } %>
     </div>
 
