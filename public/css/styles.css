@@ -18,6 +18,9 @@ Root & HTML foundation
   --max: 1200px;
 }
 
+/**************************** 
+Global 
+****************************/
 *,
 *::before,
 *::after {
@@ -40,15 +43,6 @@ body {
   height: 100vh;
 }
 
-#wrapper {
-  min-height: 100%;
-}
-#main-content {
-  max-width: var(--max);
-  margin: 0 auto;
-  padding: 1.25rem;
-}
-
 @font-face {
   font-family: 'StarJediMain';
   src: url('/fonts/STJEDISE.ttf') format('truetype');
@@ -66,7 +60,19 @@ h1 {
   margin-bottom: 0.5rem;
 }
 
-/* ================= HEADER ================= */
+/**************************** 
+Layout wrappers 
+****************************/
+#wrapper {
+  min-height: 100%;
+}
+#main-content {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+/* =============== HEADER =============== */
 .site-header {
   background: var(--dark-bg);
   border-bottom: 1px solid var(--line);
@@ -134,7 +140,7 @@ h1 {
   gap: 0.75rem;
 }
 
-/* ================= BUTTONS ================= */
+/* ============ BUTTONS ================ */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -183,7 +189,7 @@ h1 {
   filter: brightness(1.03);
 }
 
-/* ============= INDEX HOME HERO ============= */
+/* =============  HOME PAGE ============= */
 #main-content:has(.home-hero) {
   max-width: none;
   margin: 0;
@@ -233,7 +239,7 @@ h1 {
 }
 
 .home-hero-note {
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: var(--white);
   opacity: 0.85;
 }
@@ -285,6 +291,7 @@ h1 {
   color: var(--yellow);
   text-decoration: none;
   font-weight: 600;
+  font-size: 1.25rem;
   transition: all 0.2s ease;
 }
 
@@ -371,16 +378,31 @@ h1 {
 .villains-hero-inner {
   position: relative;
   z-index: 1;
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
+  padding-top: 2.75rem;
+}
+
+/* Welcome text (top-right inside the hero-inner) */
+.heroes-welcome,
+.villains-welcome {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: var(--bg-light);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
 }
 
 .hero-row {
   display: grid;
-  grid-template-columns: 260px 180px;
+  grid-template-columns: 350px 1fr;
   align-items: center;
-  column-gap: 5rem;
-  margin-bottom: 1.75rem;
+  column-gap: 2rem;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
 }
 
 .hero-name {
@@ -391,20 +413,65 @@ h1 {
   color: var(--yellow);
 }
 
-.heroes-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 1.35rem;
-  padding-top: 0.25rem;
+.hero-actions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 175px;
+  gap: 3rem;
+  align-items: center;
+  justify-content: start;
 }
 
-.btn-hero-details {
+.hero-actions .btn,
+.heroes-actions .btn {
+  width: 100%;
+  border-width: 2px;
+  border-radius: 1rem;
+  padding: 0.85rem 1rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.08rem;
+}
+
+/* .btn-hero-details {
   border-width: 2px;
   border-radius: 1rem;
   padding: 0.75rem;
   font-size: 1.25rem;
   font-weight: 500;
   letter-spacing: 0.15rem;
+} */
+
+.btn-hero-delete {
+  border-color: var(--sith-red);
+  color: var(--sith-red);
+}
+.btn-hero-delete:hover {
+  background: rgba(255, 0, 0, 0.12);
+  color: var(--sith-red);
+}
+
+.hero-create-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.btn-hero-create {
+  min-width: 300px;
+  padding: 1rem 2.5rem;
+  border-radius: 1rem;
+  font-family: 'news-gothic-std', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 1.2rem;
+  color: var(--dark-bg);
+  letter-spacing: 0.1rem;
+}
+
+.btn-hero-create:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
 }
 
 /* =========== VILLAINS INDEX PAGE ============ */
